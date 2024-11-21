@@ -6,7 +6,7 @@ import { runPreprocess } from './runPreprocess'
 
 describe('runPreprocess', () => {
   it('should create schema.json with the SQL content in the specified directory', () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-publicDir-'))
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-distDir-'))
     const inputPath = path.join(tmpDir, 'input.sql')
 
     const sqlContent = 'CREATE TABLE test (id INT, name VARCHAR(255));'
@@ -22,7 +22,7 @@ describe('runPreprocess', () => {
   })
 
   it('should throw an error if the input file does not exist', () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-publicDir-'))
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'test-distDir-'))
     const nonExistentPath = path.join(tmpDir, 'non-existent.sql')
 
     expect(() => runPreprocess(nonExistentPath, tmpDir)).toThrow(

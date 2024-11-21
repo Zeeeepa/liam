@@ -7,10 +7,8 @@
     "liam": "./dist-cli/bin/cli.js"
   },
   "scripts": {
-    "command:dev": "pnpm run build && node ./dist-cli/bin/cli.js erd dev --input ./fixtures/input.schema.rb",
     "command:build": "pnpm run build && node ./dist-cli/bin/cli.js erd build --input ./fixtures/input.schema.rb",
-    "command:preview": "pnpm run build && node ./dist-cli/bin/cli.js erd preview",
-    "build": "tsc -p tsconfig.node.json",
+    "build": "vite build && tsc -p tsconfig.node.json && rm -rf dist-cli/html && cp -R dist dist-cli/html",
     "dev:app": "vite",
     "dev:css": "tcm src --watch",
     "gen": "conc -c auto pnpm:gen:*",

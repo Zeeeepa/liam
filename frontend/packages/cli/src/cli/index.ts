@@ -1,13 +1,8 @@
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
 import { buildCommand } from './commands/index.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const root = path.resolve(__dirname, '../../..')
-const publicDir = path.join(process.cwd(), 'public')
-const outDir = path.join(process.cwd(), 'dist')
+const distDir = path.join(process.cwd(), 'dist')
 
 const program = new Command()
 
@@ -20,6 +15,6 @@ erdCommand
   .command('build')
   .description('Run Vite build')
   .option('--input <path>', 'Path to the .sql file')
-  .action((options) => buildCommand(options.input, publicDir, root, outDir))
+  .action((options) => buildCommand(options.input, distDir))
 
 export { program }
