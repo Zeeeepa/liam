@@ -8,7 +8,8 @@
   },
   "scripts": {
     "command:build": "pnpm run build && node ./dist-cli/bin/cli.js erd build --input ./fixtures/input.schema.rb",
-    "build": "vite build && tsc -p tsconfig.node.json && rm -rf dist-cli/html && cp -R dist dist-cli/html",
+    "build": "pnpm build:vite && tsc -p tsconfig.node.json && rm -rf dist-cli/html && cp -R dist dist-cli/html",
+    "build:vite": "vite build",
     "dev:app": "vite",
     "dev:css": "tcm src --watch",
     "gen": "conc -c auto pnpm:gen:*",
