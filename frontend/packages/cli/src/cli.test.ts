@@ -1,7 +1,7 @@
 import type { Command } from 'commander'
 import { describe, expect, it, vi } from 'vitest'
-import { program } from '.'
-import { buildCommand, devCommand, previewCommand } from './commands'
+import { program } from './cli'
+import { buildCommand, devCommand, previewCommand } from './cli/commands'
 
 // Function to set up mocks
 function setupMocks() {

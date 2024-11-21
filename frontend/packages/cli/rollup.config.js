@@ -7,7 +7,6 @@ export default {
   output: {
     file: 'dist-cli/bin/cli.js',
     format: 'esm',  // ECMAScript モジュール形式で出力
-    // banner: '#!/usr/bin/env node',
   },
   plugins: [
     resolve({

@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { buildCommand, devCommand, previewCommand } from './commands/index.js'
+import { buildCommand, devCommand, previewCommand } from './cli/commands/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const root = path.resolve(__dirname, '../../..')
+const root = path.resolve(__dirname, '../..')
 const publicDir = path.join(process.cwd(), 'public')
 const outDir = path.join(process.cwd(), 'dist')
 
