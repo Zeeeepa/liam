@@ -1,10 +1,9 @@
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
-import type { RollupOptions } from 'rollup'
 import execute from 'rollup-plugin-execute'
 
-const config: RollupOptions = {
+export default {
   input: 'bin/cli.ts',
   output: {
     file: 'dist-cli/bin/cli.js',
@@ -24,5 +23,3 @@ const config: RollupOptions = {
   ],
   external: ['commander', 'vite'],
 }
-
-export default config
