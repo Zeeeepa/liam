@@ -1,22 +1,22 @@
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
+import commonjs from '@rollup/plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve'
+import typescript from '@rollup/plugin-typescript'
 
 export default {
   input: 'bin/cli.ts',
   output: {
     file: 'dist-cli/bin/cli.js',
-    format: 'esm',  // ECMAScript モジュール形式で出力
+    format: 'esm',
   },
   plugins: [
     resolve({
       preferBuiltins: true,
-      extensions: ['.mjs', '.js', '.json', '.node', '.ts']
+      extensions: ['.mjs', '.js', '.json', '.node', '.ts'],
     }),
     commonjs(),
     typescript({
-        tsconfig: './tsconfig.node.json' // TypeScript設定ファイルのパス
-    })
+      tsconfig: './tsconfig.node.json',
+    }),
   ],
-  external: ['commander', 'vite']
-};
+  external: ['commander', 'vite'],
+}
