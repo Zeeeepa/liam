@@ -11,7 +11,6 @@
     "moduleDetection": "force",
     "noEmit": false,
     "strict": true,
-    "outDir": "dist-cli",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
