@@ -7,14 +7,6 @@ export const buildCommand = async (
   root: string,
   outDir: string,
 ) => {
-  console.error('=====1nputPath')
-  console.error(inputPath)
-  console.error('=====publicDir')
-  console.error(publicDir)
-  console.error('=====root')
-  console.error(root)
-  console.error('=====outDir')
-  console.error(outDir)
   runPreprocess(inputPath, publicDir)
   await build({
     publicDir,

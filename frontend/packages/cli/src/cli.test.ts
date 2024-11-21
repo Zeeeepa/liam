@@ -5,13 +5,13 @@ import { buildCommand, devCommand, previewCommand } from './cli/commands'
 
 // Function to set up mocks
 function setupMocks() {
-  vi.mock('./commands/buildCommand', () => ({
+  vi.mock('./cli/commands/buildCommand', () => ({
     buildCommand: vi.fn(),
   }))
-  vi.mock('./commands/devCommand', () => ({
+  vi.mock('./cli/commands/devCommand', () => ({
     devCommand: vi.fn(),
   }))
-  vi.mock('./commands/previewCommand', () => ({
+  vi.mock('./cli/commands/previewCommand', () => ({
     previewCommand: vi.fn(),
   }))
 }
