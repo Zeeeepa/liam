@@ -17,6 +17,7 @@ export const buildCommand = async (
   const cliHtmlPath = resolve(__dirname, '../html')
   console.error(cliHtmlPath)
   console.error(`${outDir}/`)
+  exec(`mkdir -p ${outDir}/`, (_error, _stdout, _stderr) => {})
   // cp -R html
-  exec(`cp -R ${cliHtmlPath} ${outDir}/`, (_error, _stdout, _stderr) => {})
+  exec(`cp -R ${cliHtmlPath}/* ${outDir}/`, (_error, _stdout, _stderr) => {})
 }
