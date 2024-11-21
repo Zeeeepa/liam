@@ -15,12 +15,12 @@
     "fmt:biome": "biome check --write --unsafe ."
   },
   "dependencies": {
-    "@liam/db-structure": "workspace:*",
     "@xyflow/react": "^12.3.5",
     "react": "^18"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
+    "@liam/db-structure": "workspace:*",
     "@packages/configs": "workspace:*",
     "@types/react": "^18",
     "typed-css-modules": "^0.9.1",

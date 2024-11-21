@@ -10,7 +10,7 @@
     "command:dev": "pnpm run build && node ./dist-cli/bin/cli.js erd dev --input ./fixtures/input.schema.rb",
     "command:build": "pnpm run build && node ./dist-cli/bin/cli.js erd build --input ./fixtures/input.schema.rb",
     "command:preview": "pnpm run build && node ./dist-cli/bin/cli.js erd preview",
-    "build": "tsc -p tsconfig.node.json",
+    "build": "rollup -c",
     "dev:app": "vite",
     "dev:css": "tcm src --watch",
     "gen": "conc -c auto pnpm:gen:*",
@@ -23,8 +23,6 @@
     "test": "pnpm vitest --watch=false"
   },
   "dependencies": {
-    "@liam/db-structure": "workspace:*",
-    "@liam/erd-core": "workspace:*",
     "commander": "^12.1.0",
     "destyle.css": "^4.0.1",
     "react": "^18",
@@ -34,10 +32,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
+    "@liam/db-structure": "workspace:*",
+    "@liam/erd-core": "workspace:*",
+    "@rollup/plugin-typescript": "^12.1.1",
     "@types/node": "^22.9.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4.3.3",
+    "rollup": "^4.27.3",
     "typed-css-modules": "^0.9.1",
     "typescript": "^5",
     "vitest": "^2.1.4"
