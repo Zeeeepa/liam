@@ -6,7 +6,7 @@ export default {
   input: 'bin/cli.ts',
   output: {
     file: 'dist-cli/bin/cli/index.js',
-    format: 'esm', // ECMAScript モジュール形式で出力
+    format: 'esm',
   },
   plugins: [
     resolve({
@@ -15,7 +15,7 @@ export default {
     }),
     commonjs(),
     typescript({
-      tsconfig: './tsconfig.node.json', // TypeScript設定ファイルのパス
+      tsconfig: './tsconfig.node.json',
     }),
   ],
   external: ['commander', 'vite'],
