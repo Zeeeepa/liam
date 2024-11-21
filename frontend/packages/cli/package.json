@@ -23,6 +23,7 @@
     "test": "pnpm vitest --watch=false"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
     "commander": "^12.1.0",
     "destyle.css": "^4.0.1",
     "react": "^18",
@@ -40,7 +41,6 @@
     "@types/node": "^22.9.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@vitejs/plugin-react": "^4.3.3",
     "rollup": "^4.27.3",
     "rollup-plugin-execute": "^1.1.1",
     "typed-css-modules": "^0.9.1",

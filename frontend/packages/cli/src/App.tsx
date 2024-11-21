@@ -1,5 +1,5 @@
-import { type DBStructure, dbStructureSchema } from '@liam/db-structure'
-import { ERDRenderer } from '@liam/erd-core'
+import { type DBStructure, dbStructureSchema } from '@liam/db-structure/dist/index.js'
+import { ERDRenderer } from '@liam/erd-core/src/index.js'
 import { useEffect, useState } from 'react'
 import * as v from 'valibot'
 
