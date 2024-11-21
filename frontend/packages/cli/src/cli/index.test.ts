@@ -41,8 +41,6 @@ describe('program', () => {
       })
       expect(buildCommand).toHaveBeenCalledWith(
         'path/to/file.sql',
-        expect.stringMatching(/\/public$/),
-        expect.any(String),
         expect.stringMatching(/\/dist$/),
       )
     })

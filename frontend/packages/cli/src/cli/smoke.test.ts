@@ -41,8 +41,7 @@ describe('CLI Smoke Test', () => {
         'npx --no-install . erd build --input fixtures/input.schema.rb',
       )
       expect(stderr).toBe('')
-      expect(stdout).toContain('building for production')
-      expect(stdout).toContain('✓ built in')
+      expect(stdout).toBe('')
       const { stdout: lsOutput } = await execAsync('ls ./dist')
       expect(lsOutput.trim().length).toBeGreaterThan(0)
     } catch (error) {
