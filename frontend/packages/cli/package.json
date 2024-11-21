@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "bin": {
-    "liam": "./dist-cli/bin/cli.js"
+    "liam": "./dist-cli/bin/cli/index.js"
   },
   "scripts": {
-    "command:dev": "pnpm run build && node ./dist-cli/bin/cli.js erd dev --input ./fixtures/input.schema.rb",
-    "command:build": "pnpm run build && node ./dist-cli/bin/cli.js erd build --input ./fixtures/input.schema.rb",
-    "command:preview": "pnpm run build && node ./dist-cli/bin/cli.js erd preview",
+    "command:dev": "pnpm run build && node ./dist-cli/bin/cli/index.js erd dev --input ./fixtures/input.schema.rb",
+    "command:build": "pnpm run build && node ./dist-cli/bin/cli/index.js erd build --input ./fixtures/input.schema.rb",
+    "command:preview": "pnpm run build && node ./dist-cli/bin/cli/index.js erd preview",
     "build": "rollup -c",
     "dev:app": "vite",
     "dev:css": "tcm src --watch",

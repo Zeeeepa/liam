@@ -22,13 +22,13 @@ To build the CLI for development purposes, run:
 
 ```bash
 pnpm run build
-# The executable will be output to dist-cli/bin/cli.js.
+# The executable will be output to dist-cli/bin/cli/index.js.
 ```
 
 After building, you can invoke it locally with:
 
 ```bash
-node ./dist-cli/bin/cli.js erd build --input ./fixtures/input.schema.rb
+node ./dist-cli/bin/cli/index.js erd build --input ./fixtures/input.schema.rb
 ```
 
 To make it globally accessible as `liam`, use:

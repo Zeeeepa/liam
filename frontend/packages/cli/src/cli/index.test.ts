@@ -1,17 +1,17 @@
 import type { Command } from 'commander'
 import { describe, expect, it, vi } from 'vitest'
-import { program } from './cli'
-import { buildCommand, devCommand, previewCommand } from './cli/commands'
+import { program } from '.'
+import { buildCommand, devCommand, previewCommand } from './commands'
 
 // Function to set up mocks
 function setupMocks() {
-  vi.mock('./cli/commands/buildCommand', () => ({
+  vi.mock('./commands/buildCommand', () => ({
     buildCommand: vi.fn(),
   }))
-  vi.mock('./cli/commands/devCommand', () => ({
+  vi.mock('./commands/devCommand', () => ({
     devCommand: vi.fn(),
   }))
-  vi.mock('./cli/commands/previewCommand', () => ({
+  vi.mock('./commands/previewCommand', () => ({
     previewCommand: vi.fn(),
   }))
 }
