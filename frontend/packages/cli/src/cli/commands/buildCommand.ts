@@ -10,10 +10,7 @@ export const buildCommand = async (inputPath: string, outDir: string) => {
 
   const __filename = fileURLToPath(import.meta.url)
   const __dirname = dirname(__filename)
-  console.error('Building...')
   const cliHtmlPath = resolve(__dirname, '../html')
-  console.error(cliHtmlPath)
-  console.error(`${outDir}/`)
   exec(`mkdir -p ${outDir}/`, (_error, _stdout, _stderr) => {})
   // cp -R html
   exec(`cp -R ${cliHtmlPath}/* ${outDir}/`, (_error, _stdout, _stderr) => {})
