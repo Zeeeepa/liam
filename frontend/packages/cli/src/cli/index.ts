@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Command } from 'commander'
-import { buildCommand, devCommand, previewCommand } from './commands/index.js'
+import { buildCommand } from './commands/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,16 +21,5 @@ erdCommand
   .description('Run Vite build')
   .option('--input <path>', 'Path to the .sql file')
   .action((options) => buildCommand(options.input, publicDir, root, outDir))
-
-erdCommand
-  .command('dev')
-  .description('Run Vite dev server')
-  .option('--input <path>', 'Path to the .sql file')
-  .action((options) => devCommand(options.input, publicDir, root))
-
-erdCommand
-  .command('preview')
-  .description('Preview the production build')
-  .action(() => previewCommand(publicDir, root, outDir))
 
 export { program }
