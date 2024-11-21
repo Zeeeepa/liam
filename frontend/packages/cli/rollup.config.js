@@ -15,6 +15,7 @@ export default {
     }),
     commonjs(),
     typescript({
+      outputToFilesystem: true,
       tsconfig: './tsconfig.node.json',
     }),
   ],
