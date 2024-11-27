@@ -143,6 +143,9 @@ importers:
       '@liam/db-structure':
         specifier: workspace:*
         version: link:../db-structure
+      '@liam/ui':
+        specifier: workspace:*
+        version: link:../ui
       '@types/react':
         specifier: ^18
         version: 18.3.12
