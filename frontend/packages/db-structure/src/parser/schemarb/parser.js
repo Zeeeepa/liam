@@ -2318,7 +2318,8 @@ function peg$parse(input, options) {
       if (!idField) {
         table.fields.unshift({
           name: "id",
-          type: { type_name: "varchar" }
+          type: { type_name: "varchar" },
+          PK: true,
         });
       }
       data.tables.push(table);
