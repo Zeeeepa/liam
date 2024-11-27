@@ -4,8 +4,9 @@ import { FacebookIcon } from './FacebookIcon'
 import { InfoIcon } from './InfoIcon'
 import { LinkedInIcon } from './LinkedInIcon'
 import { XIcon } from './XIcon'
+import { PrimaryKeyIcon } from './PrimaryKeyIcon'
 
-const icons = [InfoIcon, XIcon, FacebookIcon, LinkedInIcon]
+const icons = [InfoIcon, XIcon, FacebookIcon, LinkedInIcon, PrimaryKeyIcon]
 
 const IconList: FC = () => {
   return (

@@ -2,6 +2,7 @@ import type { Table } from '@liam/db-structure'
 import type { Node, NodeProps } from '@xyflow/react'
 import type { FC } from 'react'
 import styles from './TableNode.module.css'
+import { PrimaryKeyIcon } from '@liam/ui'
 
 type Data = {
   table: Table
@@ -18,6 +19,8 @@ export const TableNode: FC<Props> = ({ data: { table } }) => {
       <ul>
         {Object.values(table.columns).map((column) => (
           <li key={column.name}>
+            <span>{column.primary && <PrimaryKeyIcon />}</span>
+            <span> </span>
             <span>{column.name}</span>
             <span> </span>
             <span>{column.type}</span>
