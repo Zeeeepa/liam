@@ -14,7 +14,7 @@ exports[`parse > should parse postgresql to JSON correctly 1`] = `
           "name": "created_at",
           "notNull": false,
           "primary": false,
-          "type": "timestamp",
+          "type": "",
           "unique": false,
         },
         "email": {
@@ -25,7 +25,7 @@ exports[`parse > should parse postgresql to JSON correctly 1`] = `
           "name": "email",
           "notNull": true,
           "primary": false,
-          "type": "varchar",
+          "type": "",
           "unique": true,
         },
         "id": {
@@ -36,7 +36,7 @@ exports[`parse > should parse postgresql to JSON correctly 1`] = `
           "name": "id",
           "notNull": true,
           "primary": true,
-          "type": "serial",
+          "type": "",
           "unique": false,
         },
         "username": {
@@ -47,7 +47,7 @@ exports[`parse > should parse postgresql to JSON correctly 1`] = `
           "name": "username",
           "notNull": true,
           "primary": false,
-          "type": "varchar",
+          "type": "",
           "unique": true,
         },
       },

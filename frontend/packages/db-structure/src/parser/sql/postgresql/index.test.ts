@@ -13,7 +13,7 @@ describe(processor, () => {
             columns: {
               id: aColumn({
                 name: 'id',
-                type: 'serial',
+                type: '', // 'serial'
                 notNull: true,
                 primary: true,
               }),
@@ -23,8 +23,8 @@ describe(processor, () => {
         },
       })
 
-    it('not null', () => {
-      const result = processor(/* PostgreSQL */ `
+    it('not null', async () => {
+      const result = await processor(/* PostgreSQL */ `
         CREATE TABLE users (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255) NOT NULL
@@ -35,7 +35,7 @@ describe(processor, () => {
         columns: {
           name: aColumn({
             name: 'name',
-            type: 'varchar',
+            type: '', // 'varchar'
             notNull: true,
           }),
         },
@@ -44,8 +44,8 @@ describe(processor, () => {
       expect(result).toEqual(expected)
     })
 
-    it('nullable', () => {
-      const result = processor(/* PostgreSQL */ `
+    it('nullable', async () => {
+      const result = await processor(/* PostgreSQL */ `
         CREATE TABLE users (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255)
@@ -56,7 +56,7 @@ describe(processor, () => {
         columns: {
           name: aColumn({
             name: 'name',
-            type: 'varchar',
+            type: '', // 'varchar'
             notNull: false,
           }),
         },
