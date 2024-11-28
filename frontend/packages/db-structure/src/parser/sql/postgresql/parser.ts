@@ -1,9 +1,9 @@
 import type { RawStmt } from '@pgsql/types'
 // @ts-expect-error
-import Module from "pg-query-emscripten";
+import Module from 'pg-query-emscripten'
 
 export const parse = async (str: string): Promise<RawStmtWrapper[]> => {
-  const pgQuery = await new Module();
+  const pgQuery = await new Module()
   return pgQuery.parse(str)
 }
 

@@ -5,7 +5,10 @@ import { processor as postgresqlProcessor } from './sql/index.js'
 type SupportedFormat = 'schemarb' | 'postgres'
 
 // TODO: Add error handling and tests
-export const parse = (str: string, format: SupportedFormat): Promise<DBStructure> | DBStructure => {
+export const parse = (
+  str: string,
+  format: SupportedFormat,
+): Promise<DBStructure> | DBStructure => {
   switch (format) {
     case 'schemarb':
       return schemarbProcessor(str)

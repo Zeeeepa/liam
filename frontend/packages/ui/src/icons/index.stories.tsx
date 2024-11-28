@@ -3,8 +3,8 @@ import type { FC } from 'react'
 import { FacebookIcon } from './FacebookIcon'
 import { InfoIcon } from './InfoIcon'
 import { LinkedInIcon } from './LinkedInIcon'
-import { XIcon } from './XIcon'
 import { PrimaryKeyIcon } from './PrimaryKeyIcon'
+import { XIcon } from './XIcon'
 
 const icons = [InfoIcon, XIcon, FacebookIcon, LinkedInIcon, PrimaryKeyIcon]
 

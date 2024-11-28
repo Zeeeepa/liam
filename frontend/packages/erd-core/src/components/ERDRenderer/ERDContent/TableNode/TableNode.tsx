@@ -1,8 +1,8 @@
 import type { Table } from '@liam/db-structure'
+import { PrimaryKeyIcon } from '@liam/ui'
 import type { Node, NodeProps } from '@xyflow/react'
 import type { FC } from 'react'
 import styles from './TableNode.module.css'
-import { PrimaryKeyIcon } from '@liam/ui'
 
 type Data = {
   table: Table

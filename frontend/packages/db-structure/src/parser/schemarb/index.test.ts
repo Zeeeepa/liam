@@ -11,7 +11,7 @@ describe(processor, () => {
           users: aTable({
             name: 'users',
             columns: {
-              id: aColumn({primary: true}),
+              id: aColumn({ primary: true }),
               ...override?.columns,
             },
           }),
@@ -27,7 +27,7 @@ describe(processor, () => {
 
       const expected = userTable({
         columns: {
-          id: aColumn({primary: true}),
+          id: aColumn({ primary: true }),
           name: aColumn({
             name: 'name',
             type: 'string',
@@ -48,7 +48,7 @@ describe(processor, () => {
 
       const expected = userTable({
         columns: {
-          id: aColumn({primary: true}),
+          id: aColumn({ primary: true }),
           name: aColumn({
             name: 'name',
             type: 'string',
@@ -69,7 +69,7 @@ describe(processor, () => {
 
       const expected = userTable({
         columns: {
-          id: aColumn({primary: true}),
+          id: aColumn({ primary: true }),
           name: aColumn({
             name: 'name',
             type: 'string',
