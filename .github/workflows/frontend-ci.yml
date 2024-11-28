@@ -3,6 +3,7 @@ name: frontend-ci
 on:
   pull_request:
   merge_group:
+  push:
 
 env:
   working-directory: frontend
