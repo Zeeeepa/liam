@@ -10,6 +10,7 @@ export default {
     file: 'dist-cli/bin/cli.js',
     format: 'esm',
   },
+  cache: false,
   plugins: [
     resolve({
       preferBuiltins: true,
