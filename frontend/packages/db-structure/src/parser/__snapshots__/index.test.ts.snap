@@ -105,7 +105,7 @@ exports[`parse > should parse schema.rb to JSON correctly 1`] = `
           "increment": false,
           "name": "id",
           "notNull": false,
-          "primary": false,
+          "primary": true,
           "type": "varchar",
           "unique": false,
         },
