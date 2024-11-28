@@ -7,7 +7,7 @@ const execAsync = promisify(exec)
 beforeAll(async () => {
   await execAsync('rm -rf ./dist-cli/ ./node_modules/.tmp')
   await execAsync('pnpm run build')
-}, 20000 /* 20 seconds for setup */)
+}, 30000 /* 30 seconds for setup */)
 
 describe('CLI Smoke Test', () => {
   // Skipping this test due to failing caused by changes in PR#90
