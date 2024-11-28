@@ -15,13 +15,14 @@
     "gen:parser": "./scripts/generateParser.sh"
   },
   "dependencies": {
+    "pg-query-emscripten": "^5.1.0",
     "pgsql-parser": "^13.16.0",
     "valibot": "^1.0.0-beta.5"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",
-    "@pgsql/types": "^15.0.2",
     "@liam/configs": "workspace:*",
+    "@pgsql/types": "^15.0.2",
     "lodash-es": "^4.17.21",
     "peggy": "^4.1.1",
     "pluralize-esm": "^9.0.5",

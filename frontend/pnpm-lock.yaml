@@ -93,6 +93,9 @@ importers:
 
   packages/db-structure:
     dependencies:
+      pg-query-emscripten:
+        specifier: ^5.1.0
+        version: 5.1.0
       pgsql-parser:
         specifier: ^13.16.0
         version: 13.16.0(encoding@0.1.13)
@@ -1655,11 +1658,6 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  concurrently@9.0.1:
-    resolution: {integrity: sha512-wYKvCd/f54sTXJMSfV6Ln/B8UrfLBKOYa+lzc6CHay3Qek+LorVSBdMVfyewFhRbH0Rbabsk4D+3PL/VjQ5gzg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   console-control-strings@1.1.0:
     resolution: {integrity: sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==}
 
@@ -2858,6 +2856,9 @@ packages:
     resolution: {integrity: sha512-2emciJQKahHJpT7f1asizGSnJ8bq0TKgWMXnCrtAaSH1NIXaGifYxL5m5KMrCdlaqaQJz3SVexNkx+I+Vz66VA==}
     engines: {node: '>=18'}
     hasBin: true
+
+  pg-query-emscripten@5.1.0:
+    resolution: {integrity: sha512-H1ZWOzLRddmHuE4GZqFjjo55hA9zMiePz/WDDGANA/EnvILCJps9pcRucyGd+MFvapeYOy6TWSYz6DbtBOaxRQ==}
 
   pgsql-deparser@13.15.0:
     resolution: {integrity: sha512-6d4YeDE/y+AZ/C4tlzTrFwbOqDW4ma/jvYlXRgXYVdPU2WF5IQISksIQ8uhNMXW7QxL/4gw0bzLhRNwckf3t/Q==}
@@ -5277,16 +5278,6 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  concurrently@9.0.1:
-    dependencies:
-      chalk: 4.1.2
-      lodash: 4.17.21
-      rxjs: 7.8.1
-      shell-quote: 1.8.1
-      supports-color: 8.1.1
-      tree-kill: 1.2.2
-      yargs: 17.7.2
-
   console-control-strings@1.1.0: {}
 
   constant-case@2.0.0:
@@ -6584,6 +6575,8 @@ snapshots:
       '@peggyjs/from-mem': 1.3.4
       commander: 12.1.0
       source-map-generator: 0.8.0
+
+  pg-query-emscripten@5.1.0: {}
 
   pgsql-deparser@13.15.0:
     dependencies:
