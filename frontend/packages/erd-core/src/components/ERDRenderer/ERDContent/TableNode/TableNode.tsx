@@ -19,7 +19,9 @@ export const TableNode: FC<Props> = ({ data: { table } }) => {
       <ul>
         {Object.values(table.columns).map((column) => (
           <li key={column.name}>
-            <span>{column.primary && <PrimaryKeyIcon />}</span>
+            <span>
+              {column.primary && <PrimaryKeyIcon width={16} height={16} />}
+            </span>
             <span> </span>
             <span>{column.name}</span>
             <span> </span>
