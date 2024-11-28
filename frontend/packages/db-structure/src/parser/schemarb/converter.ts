@@ -14,7 +14,7 @@ export const convertToDBStructure = (data: any): DBStructure => {
           increment: false,
           name: field.name,
           notNull: 'nullable' in field ? !field.nullable : false,
-          primary: false,
+          primary: field.PK || false,
           type: field.type.type_name,
           unique: false,
         }
