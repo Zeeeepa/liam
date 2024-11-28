@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef, FC } from 'react'
 type Props = ComponentPropsWithoutRef<'svg'>
 
 /**
- * Icons sourced from Lucide (https://lucide.dev).
+ * This icon is sourced from Lucide (https://lucide.dev).
  * Copyright (c) Lucide contributors. Licensed under the ISC License.
  */
 export const PrimaryKeyIcon: FC<Props> = (props) => {
