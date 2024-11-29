@@ -34,7 +34,7 @@
   "scripts": {
     "build": "pnpm run '/^build:.*/'",
     "build:cli": "rollup -c",
-    "build:vite": "vite build --outDir dist-cli/html",
+    "build:vite": "vite build --outDir dist-cli/html && rm -f dist-cli/html/schema.json",
     "command:build": "node ./dist-cli/bin/cli.js erd build --input fixtures/input.schema.rb",
     "dev": "pnpm command:build && cp dist/schema.json public/ && pnpm run '/^dev:.*/'",
     "dev:app": "vite",
