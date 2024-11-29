@@ -36,7 +36,7 @@
     "build:cli": "rollup -c",
     "build:vite": "vite build --outDir dist-cli/html",
     "command:build": "node ./dist-cli/bin/cli.js erd build --input fixtures/input.schema.rb",
-    "dev": "pnpm command:build && rm -f public/schema.json && cp dist/schema.json public/ && pnpm run '/^dev:.*/'",
+    "dev": "pnpm command:build && cp dist/schema.json public/ && pnpm run '/^dev:.*/'",
     "dev:app": "vite",
     "dev:css": "tcm src --watch",
     "fmt": "pnpm run '/^fmt:.*/'",
