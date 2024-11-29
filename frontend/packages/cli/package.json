@@ -35,7 +35,7 @@
     "build": "pnpm run '/^build:.*/'",
     "build:cli": "rollup -c",
     "build:vite": "vite build --outDir dist-cli/html",
-    "command:build": "node ./dist-cli/bin/cli.js erd build --input fixtures/input.schema2.rb && echo '33333333333333333'",
+    "command:build": "node ./dist-cli/bin/cli.js erd build --input fixtures/input.schema.rb && echo '33333333333333333'",
     "dev": "pnpm command:build && cat dist/schema.json && rm -f public/schema.json && cp dist/schema.json public/ && echo '22222222222' && pnpm run '/^dev:.*/'",
     "dev:app": "vite",
     "dev:css": "tcm src --watch",
