@@ -1,8 +1,8 @@
-name: release
+name: release-debug
 on:
   push:
     branches:
-      - main
+      - release-debug-branch
 env:
   working-directory: frontend
 
@@ -20,21 +20,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            .github
-            ${{ env.working-directory }}
-      - uses: ./.github/actions/pnpm-setup
-        with:
-          working-directory: ${{ env.working-directory }}
-
       - name: Create GitHub App Token
         uses: actions/create-github-app-token@v1
         id: app-token
         with:
           app-id: ${{ vars.CI_TRIGGER_APP_ID }}
           private-key: ${{ secrets.CI_TRIGGER_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            ${{ env.working-directory }}
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: ./.github/actions/pnpm-setup
+        with:
+          working-directory: ${{ env.working-directory }}
 
       - name: Create Release Pull Request or Publish to npm
         uses: changesets/action@v1.4.9
