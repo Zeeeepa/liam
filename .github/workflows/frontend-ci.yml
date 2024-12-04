@@ -3,7 +3,6 @@ name: frontend-ci
 on:
   pull_request:
   merge_group:
-  push:
 
 env:
   working-directory: frontend
@@ -29,11 +28,36 @@ jobs:
               - '.github/actions/pnpm-setup/**'
               - './frontend/**'
 
-  frontend-debug:
+  frontend-lint:
     needs: [setup-job]
     if: ${{ needs.setup-job.outputs.has-changes == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
+
     steps:
-      - run: npx @liam-hq/cli@0.0.1
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/pnpm-setup
+        with:
+          working-directory: ${{ env.working-directory }}
+      - run: pnpm lint
+
+  frontend-ci:
+    needs: [setup-job]
+    if: ${{ needs.setup-job.outputs.has-changes == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: ${{ env.working-directory }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/pnpm-setup
+        with:
+          working-directory: ${{ env.working-directory }}
+      - run: pnpm test:turbo
