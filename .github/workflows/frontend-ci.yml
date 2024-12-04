@@ -3,6 +3,8 @@ name: frontend-ci
 on:
   pull_request:
   merge_group:
+  push:
+    on: frontend-cli-debug
 
 env:
   working-directory: frontend
@@ -61,3 +63,6 @@ jobs:
         with:
           working-directory: ${{ env.working-directory }}
       - run: pnpm test:turbo
+      - run: pnpm build
+      - run: cd packages/cli && pnpm pack
+      - run: cd packages/cli && docker run -it -v $(pwd):/home --rm node bash -c "npm i -g /home/liam-hq-cli-0.0.1.tgz && liam erd"
