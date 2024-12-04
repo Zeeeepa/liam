@@ -52,5 +52,7 @@
     "lint:tsc": "tsc --noEmit",
     "test": "vitest run"
   },
-  "files": ["dist-cli/**/*"]
+  "files": [
+    "dist-cli/**/*"
+  ]
 }

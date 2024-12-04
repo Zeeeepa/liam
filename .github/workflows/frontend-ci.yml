@@ -65,4 +65,4 @@ jobs:
       - run: pnpm test:turbo
       - run: pnpm build
       - run: cd packages/cli && pnpm pack
-      - run: cd packages/cli && docker run -it -v $(pwd):/home --rm node bash -c "npm i -g /home/liam-hq-cli-0.0.1.tgz && liam erd"
+      - run: cd packages/cli && docker run -i -v $(pwd):/home --rm node bash -c "npm i -g /home/liam-hq-cli-0.0.1.tgz && liam erd"

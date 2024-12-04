@@ -13,7 +13,8 @@
     "devDependencies",
     "peerDependencies",
     "scripts",
-    "packageManager"
+    "packageManager",
+    "files"
   ],
   "sortPackages": true,
   "semverGroups": [
