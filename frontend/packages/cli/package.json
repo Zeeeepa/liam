@@ -51,8 +51,5 @@
     "lint:biome": "biome check .",
     "lint:tsc": "tsc --noEmit",
     "test": "vitest run"
-  },
-  "files": [
-    "dist-cli/**/*"
-  ]
+  }
 }
