@@ -11,7 +11,7 @@ import {
   useEdgesState,
   useNodesState,
 } from '@xyflow/react'
-import { type FC, useCallback, useEffect } from 'react'
+import { type FC, useCallback, useEffect, useMemo } from 'react'
 import styles from './ERDContent.module.css'
 import { RelationshipEdge } from './RelationshipEdge'
 import { TableNode } from './TableNode'
@@ -37,18 +37,29 @@ type Props = {
     | undefined
 }
 
-export const isRelatedToTable = (
-  relationships: Relationships,
-  tableName: string,
-  targetTableName: string | undefined,
-) =>
-  Object.values(relationships).some(
-    (relationship) =>
-      (relationship.primaryTableName === tableName ||
-        relationship.foreignTableName === tableName) &&
-      (relationship.primaryTableName === targetTableName ||
-        relationship.foreignTableName === targetTableName),
-  )
+export const useIsRelatedToTable = (relationships: Relationships) => {
+  const cache = useMemo(() => new Map<string, boolean>(), []);
+
+  return (tableName: string, targetTableName: string | undefined) => {
+    if (!targetTableName) return false;
+
+    const cacheKey = `${tableName}-${targetTableName}`;
+    if (cache.has(cacheKey)) {
+      return cache.get(cacheKey)!;
+    }
+
+    const isRelated = Object.values(relationships).some(
+      (relationship) =>
+        (relationship.primaryTableName === tableName ||
+          relationship.foreignTableName === tableName) &&
+        (relationship.primaryTableName === targetTableName ||
+          relationship.foreignTableName === targetTableName),
+    );
+
+    cache.set(cacheKey, isRelated);
+    return isRelated;
+  };
+};
 
 export const ERDContent: FC<Props> = ({
   nodes: _nodes,
@@ -58,6 +69,7 @@ export const ERDContent: FC<Props> = ({
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
   const { relationships } = useDBStructureStore()
+  const isRelatedToTable = useIsRelatedToTable(relationships);
 
   useEffect(() => {
     setNodes(_nodes)
@@ -80,7 +92,7 @@ export const ERDContent: FC<Props> = ({
       )
       setNodes((nodes) =>
         nodes.map((n) =>
-          n.id === id || isRelatedToTable(relationships, n.id, id)
+          n.id === id || isRelatedToTable(n.id, id)
             ? { ...n, data: { ...n.data, isHighlighted: true } }
             : n,
         ),
@@ -104,7 +116,7 @@ export const ERDContent: FC<Props> = ({
       )
       setNodes((nodes) =>
         nodes.map((n) =>
-          n.id === id || isRelatedToTable(relationships, n.id, id)
+          n.id === id || isRelatedToTable(n.id, id)
             ? { ...n, data: { ...n.data, isHighlighted: false } }
             : n,
         ),

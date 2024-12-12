@@ -16,7 +16,7 @@ import { Handle, type Node, type NodeProps, Position } from '@xyflow/react'
 import clsx from 'clsx'
 import { type FC, useCallback } from 'react'
 import { match } from 'ts-pattern'
-import { isRelatedToTable } from '../ERDContent'
+import { useIsRelatedToTable } from '../ERDContent'
 import { TableHeader } from './TableHeader'
 import styles from './TableNode.module.css'
 
@@ -31,6 +31,7 @@ type Props = NodeProps<TableNodeType>
 
 export const TableNode: FC<Props> = ({ data: { table, isHighlighted } }) => {
   const { relationships } = useDBStructureStore()
+  const isRelatedToTable = useIsRelatedToTable(relationships);
   const {
     active: { tableName },
   } = useUserEditingStore()
@@ -38,7 +39,7 @@ export const TableNode: FC<Props> = ({ data: { table, isHighlighted } }) => {
   const isActive = tableName === table.name
 
   const isRelated =
-    isHighlighted || isRelatedToTable(relationships, table.name, tableName)
+    isHighlighted || isRelatedToTable(table.name, tableName)
 
   const { showMode } = useUserEditingStore()
 
