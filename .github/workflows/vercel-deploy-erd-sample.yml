@@ -4,8 +4,6 @@ name: Vercel Deployment erd-sample
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 concurrency:
