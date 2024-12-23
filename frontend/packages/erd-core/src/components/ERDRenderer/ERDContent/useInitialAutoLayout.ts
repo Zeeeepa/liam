@@ -80,5 +80,5 @@ export const useInitialAutoLayout = (nodes: Node[]) => {
     }
 
     initialize()
-  }, [tableNodesInitialized, initializeComplete, handleLayout, nodes, getEdges])
+  }, [tableNodesInitialized, initializeComplete, handleLayout, getEdges])
 }
