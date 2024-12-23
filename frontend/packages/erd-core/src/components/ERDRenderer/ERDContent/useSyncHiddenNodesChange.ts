@@ -24,5 +24,5 @@ export const useSyncHiddenNodesChange = () => {
     //  window.requestAnimationFrame(() => {
      setNodes(updatedNodes)
     //  })
-  }, [initializeComplete, getNodes, setNodes, hiddenNodeIds])
+  }, [initializeComplete, getNodes, setNodes, hiddenNodeIds, onceAutoLayoutComplete])
 }

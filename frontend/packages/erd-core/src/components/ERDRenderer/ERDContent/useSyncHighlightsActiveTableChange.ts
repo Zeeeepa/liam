@@ -30,5 +30,5 @@ export const useSyncHighlightsActiveTableChange = () => {
     console.log('useSyncHighlightsActiveTableChange', 'updatedNodes', updatedNodes)
     setNodes(updatedNodes)
     //  })
-  }, [initializeComplete, tableName, getNodes, getEdges, setNodes, setEdges])
+  }, [initializeComplete, tableName, getNodes, getEdges, setNodes, setEdges, onceAutoLayoutComplete])
 }
