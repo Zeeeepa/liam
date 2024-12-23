@@ -42,6 +42,15 @@ export const useInitialAutoLayout = (nodes: Node[]) => {
   const { handleLayout } = useAutoLayout()
 
   useEffect(() => {
+    console.log("useInitialAutoLayout", new Date().getMilliseconds(), [
+      tableNodesInitialized,
+      initializeComplete,
+      JSON.stringify(nodes).length,
+      JSON.stringify(nodes),
+      nodes,
+      // handleLayout.toString().length,
+      // getEdges.toString().length,
+    ])
     const initialize = async () => {
       if (initializeComplete) {
         return
@@ -54,7 +63,7 @@ export const useInitialAutoLayout = (nodes: Node[]) => {
       const edges = getEdges()
       const hiddenNodes = nodes.map((node) => ({
         ...node,
-        hidden: hiddenNodeIds.includes(node.id),
+        // hidden: hiddenNodeIds.includes(node.id),
       }))
       const { nodes: updatedNodes, edges: updatedEdges } =
         highlightNodesAndEdges(hiddenNodes, edges, { activeTableName })

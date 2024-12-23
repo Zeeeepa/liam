@@ -101,6 +101,7 @@ export const highlightNodesAndEdges = (
     edgeMap.get(targetTableName)?.add(sourceTableName)
   }
 
+  // よんでる
   const updatedNodes = nodes.map((node) => {
     if (!isTableNode(node)) {
       return node

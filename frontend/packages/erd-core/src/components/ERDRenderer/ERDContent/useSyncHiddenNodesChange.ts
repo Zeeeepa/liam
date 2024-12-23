@@ -11,15 +11,15 @@ export const useSyncHiddenNodesChange = () => {
   const { hiddenNodeIds } = useUserEditingStore()
 
   useEffect(() => {
-    if (!initializeComplete) {
-      return
-    }
-    const nodes = getNodes()
-    const updatedNodes = nodes.map((node) => {
-      const hidden = hiddenNodeIds.has(node.id)
-      return { ...node, hidden }
-    })
+    // if (!initializeComplete) {
+    //   return
+    // }
+    // const nodes = getNodes()
+    // const updatedNodes = nodes.map((node) => {
+    //   const hidden = hiddenNodeIds.has(node.id)
+    //   return { ...node, hidden }
+    // })
 
-    setNodes(updatedNodes)
+    // setNodes(updatedNodes)
   }, [initializeComplete, getNodes, setNodes, hiddenNodeIds])
 }
