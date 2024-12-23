@@ -5,21 +5,22 @@ import { useERDContentContext } from './ERDContentContext'
 
 export const useSyncHiddenNodesChange = () => {
   const {
-    state: { initializeComplete },
+    state: { initializeComplete, onceAutoLayoutComplete },
   } = useERDContentContext()
   const { getNodes, setNodes } = useReactFlow()
   const { hiddenNodeIds } = useUserEditingStore()
 
   useEffect(() => {
-     if (!initializeComplete) {
-       return
-     }
-     const nodes = getNodes()
-     const updatedNodes = nodes.map((node) => {
-       const hidden = hiddenNodeIds.has(node.id)
-       return { ...node, hidden }
-     })
+    if (!initializeComplete || !onceAutoLayoutComplete) {
+      return
+    }
+    const nodes = getNodes()
+    const updatedNodes = nodes.map((node) => {
+      const hidden = hiddenNodeIds.has(node.id)
+      return { ...node, hidden }
+    })
 
+    console.log(2)
     //  window.requestAnimationFrame(() => {
      setNodes(updatedNodes)
     //  })

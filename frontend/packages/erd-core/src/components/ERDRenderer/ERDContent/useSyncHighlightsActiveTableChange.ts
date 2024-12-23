@@ -6,24 +6,26 @@ import { highlightNodesAndEdges } from './highlightNodesAndEdges'
 
 export const useSyncHighlightsActiveTableChange = () => {
   const {
-    state: { initializeComplete },
+    state: { initializeComplete, onceAutoLayoutComplete },
   } = useERDContentContext()
   const { getNodes, setNodes, getEdges, setEdges } = useReactFlow()
   const { tableName } = useUserEditingActiveStore()
 
   useEffect(() => {
-    if (!initializeComplete) {
+    if (!initializeComplete || !onceAutoLayoutComplete) {
       return
     }
 
     const nodes = getNodes()
     const edges = getEdges()
+    // この呼び出しいるのか?
     const { nodes: updatedNodes, edges: updatedEdges } = highlightNodesAndEdges(
       nodes,
       edges,
       { activeTableName: tableName },
     )
 
+    console.log(3)
     //  window.requestAnimationFrame(() => {
     setEdges(updatedEdges)
     setNodes(updatedNodes)
