@@ -12,19 +12,21 @@ export const useSyncHighlightsActiveTableChange = () => {
   const { tableName } = useUserEditingActiveStore()
 
   useEffect(() => {
-    //if (!initializeComplete) {
-    //  return
-    //}
+    if (!initializeComplete) {
+      return
+    }
 
-    //const nodes = getNodes()
-    //const edges = getEdges()
-    //const { nodes: updatedNodes, edges: updatedEdges } = highlightNodesAndEdges(
-    //  nodes,
-    //  edges,
-    //  { activeTableName: tableName },
-    //)
+    const nodes = getNodes()
+    const edges = getEdges()
+    const { nodes: updatedNodes, edges: updatedEdges } = highlightNodesAndEdges(
+      nodes,
+      edges,
+      { activeTableName: tableName },
+    )
 
-    //setEdges(updatedEdges)
-    //setNodes(updatedNodes)
+    //  window.requestAnimationFrame(() => {
+    setEdges(updatedEdges)
+    setNodes(updatedNodes)
+    //  })
   }, [initializeComplete, tableName, getNodes, getEdges, setNodes, setEdges])
 }

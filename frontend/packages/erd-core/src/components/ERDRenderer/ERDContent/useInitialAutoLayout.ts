@@ -63,7 +63,7 @@ export const useInitialAutoLayout = (nodes: Node[]) => {
       const edges = getEdges()
       const hiddenNodes = nodes.map((node) => ({
         ...node,
-        // hidden: hiddenNodeIds.includes(node.id),
+        hidden: hiddenNodeIds.includes(node.id),
       }))
       const { nodes: updatedNodes, edges: updatedEdges } =
         highlightNodesAndEdges(hiddenNodes, edges, { activeTableName })
