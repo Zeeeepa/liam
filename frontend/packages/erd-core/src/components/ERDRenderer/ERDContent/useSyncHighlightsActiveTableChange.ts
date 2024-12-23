@@ -28,7 +28,7 @@ export const useSyncHighlightsActiveTableChange = () => {
     //  window.requestAnimationFrame(() => {
     setEdges(updatedEdges)
     console.log('useSyncHighlightsActiveTableChange', 'updatedNodes', updatedNodes)
-    setNodes(updatedNodes)
+    // setNodes(updatedNodes)
     //  })
   }, [initializeComplete, tableName, getNodes, getEdges, setNodes, setEdges, onceAutoLayoutComplete])
 }
