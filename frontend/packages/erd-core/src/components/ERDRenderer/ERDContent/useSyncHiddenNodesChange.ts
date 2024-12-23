@@ -20,7 +20,7 @@ export const useSyncHiddenNodesChange = () => {
       return { ...node, hidden }
     })
 
-    console.log(2)
+    console.log('useSyncHiddenNodesChange', 'updatedNodes', updatedNodes)
     //  window.requestAnimationFrame(() => {
      setNodes(updatedNodes)
     //  })

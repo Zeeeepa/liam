@@ -25,9 +25,9 @@ export const useSyncHighlightsActiveTableChange = () => {
       { activeTableName: tableName },
     )
 
-    console.log(3)
     //  window.requestAnimationFrame(() => {
     setEdges(updatedEdges)
+    console.log('useSyncHighlightsActiveTableChange', 'updatedNodes', updatedNodes)
     setNodes(updatedNodes)
     //  })
   }, [initializeComplete, tableName, getNodes, getEdges, setNodes, setEdges])
