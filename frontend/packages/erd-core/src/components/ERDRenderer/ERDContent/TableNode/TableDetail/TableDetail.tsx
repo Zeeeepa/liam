@@ -43,9 +43,6 @@ export const TableDetail: FC<Props> = ({ table }) => {
         <Columns columns={table.columns} />
         <Indices indices={table.indices} />
         <Unique columns={table.columns} />
-        <div className={styles.relatedTables}>
-          <RelatedTables key={table.name} table={table} />
-        </div>
       </div>
     </section>
   )

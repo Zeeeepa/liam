@@ -14,12 +14,16 @@ export const useSyncHiddenNodesChange = () => {
     if (!initializeComplete) {
       return
     }
-    const nodes = getNodes()
-    const updatedNodes = nodes.map((node) => {
-      const hidden = hiddenNodeIds.has(node.id)
-      return { ...node, hidden }
-    })
+    // const nodes = getNodes()
+    // if (nodes.some((node) => { node.position.x !== 0 && node.position.y !== 0 })) {
+    // } else {
+    //   console.warn('Nodes are not initialized yet')
+    // }
+    // const updatedNodes = nodes.map((node) => {
+    //   const hidden = hiddenNodeIds.has(node.id)
+    //   return { ...node, hidden }
+    // })
 
-    setNodes(updatedNodes)
+    // setNodes(updatedNodes)
   }, [initializeComplete, getNodes, setNodes, hiddenNodeIds])
 }
