@@ -12,14 +12,17 @@ export const useSyncHighlightsActiveTableChange = () => {
   const { tableName } = useUserEditingActiveStore()
 
   useEffect(() => {
+    console.log('useSyncHighlightsActiveTableChange - start', new Date().toISOString().slice(11, -1), initializeComplete, tableName)
     if (!initializeComplete) {
       return
     }
 
     const nodes = getNodes()
-    if (nodes.some((node) => { node.position.x !== 0 || node.position.y !== 0 })) {
+    console.log(nodes)
+    console.log(nodes[1]?.position)
+    if (nodes.some(node => node.position.x !== 0 || node.position.y !== 0 )) {
     } else {
-      console.log('Nodes are not initialized yet')
+      console.warn('Nodes are not initialized yet')
     }
     const edges = getEdges()
     const { nodes: updatedNodes, edges: updatedEdges } = highlightNodesAndEdges(
@@ -30,5 +33,6 @@ export const useSyncHighlightsActiveTableChange = () => {
 
     setEdges(updatedEdges)
     setNodes(updatedNodes)
+    console.log('useSyncHighlightsActiveTableChange - finish', new Date().toISOString().slice(11, -1), initializeComplete, tableName)
   }, [initializeComplete, tableName, getNodes, getEdges, setNodes, setEdges])
 }

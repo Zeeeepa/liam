@@ -1,0 +1,30 @@
+useSyncHighlightsActiveTableChange - start 23:23:18.312 false companies
+useInitialAutoLayout.ts:46 useInitialAutoLayout - start 23:23:18.316 false false 12
+useInitialAutoLayout.ts:76 useInitialAutoLayout - finish 23:23:18.316 false false 12
+useSyncHighlightsActiveTableChange.ts:15 useSyncHighlightsActiveTableChange - start 23:23:18.316 false companies
+useInitialAutoLayout.ts:46 useInitialAutoLayout - start 23:23:18.384 true false 12
+useInitialAutoLayout.ts:76 useInitialAutoLayout - finish 23:23:18.384 true false 12
+useInitialAutoLayout.ts:71 useInitialAutoLayout - tableNodesInitialized 23:23:18.394 true false
+useAutoLayout.ts:41 useAutoLayout - setNodes 23:23:18.452
+useAutoLayout.ts:44 window.requestAnimationFrame 1 - top 23:23:18.453
+useAutoLayout.ts:53 window.requestAnimationFrame 1 - bottom 23:23:18.454
+useInitialAutoLayout.ts:46 useInitialAutoLayout - start 23:23:18.465 true false 12
+useInitialAutoLayout.ts:76 useInitialAutoLayout - finish 23:23:18.465 true false 12
+useInitialAutoLayout.ts:71 useInitialAutoLayout - tableNodesInitialized 23:23:18.480 true false
+useAutoLayout.ts:47 window.requestAnimationFrame 2 - top 23:23:18.492
+useAutoLayout.ts:48 setLoading false 23:23:18.492
+useAutoLayout.ts:51 window.requestAnimationFrame 2 - bottom 23:23:18.492
+useInitialAutoLayout.ts:46 useInitialAutoLayout - start 23:23:18.514 true true 12
+useInitialAutoLayout.ts:76 useInitialAutoLayout - finish 23:23:18.514 true true 12
+useSyncHighlightsActiveTableChange.ts:15 useSyncHighlightsActiveTableChange - start 23:23:18.514 true companies
+useSyncHighlightsActiveTableChange.ts:21 (12) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+useSyncHighlightsActiveTableChange.ts:22 {x: 12, y: 92}
+useSyncHighlightsActiveTableChange.ts:36 useSyncHighlightsActiveTableChange - finish 23:23:18.514 true companies
+useAutoLayout.ts:41 useAutoLayout - setNodes 23:23:18.520
+useInitialAutoLayout.ts:46 useInitialAutoLayout - start 23:23:18.528 true true 12
+useInitialAutoLayout.ts:76 useInitialAutoLayout - finish 23:23:18.528 true true 12
+useAutoLayout.ts:44 window.requestAnimationFrame 1 - top 23:23:18.551
+useAutoLayout.ts:53 window.requestAnimationFrame 1 - bottom 23:23:18.551
+useAutoLayout.ts:47 window.requestAnimationFrame 2 - top 23:23:18.558
+useAutoLayout.ts:48 setLoading false 23:23:18.558
+useAutoLayout.ts:51 window.requestAnimationFrame 2 - bottom 23:23:18.558
