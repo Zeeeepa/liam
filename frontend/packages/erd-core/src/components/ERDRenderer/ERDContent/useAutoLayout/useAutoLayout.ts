@@ -45,8 +45,7 @@ const classifyNodes = (nodes: Node[]): { hidden: Node[]; visible: Node[] } => {
 export const useAutoLayout = () => {
   const { setNodes, fitView } = useReactFlow()
   const {
-    state: { autoLayoutComplete },
-    actions: { setLoading, setInitializeComplete, setAutoLayoutComplete },
+    actions: { setLoading, setInitializeComplete },
   } = useERDContentContext()
   const { hiddenNodeIds } = useUserEditingStore()
   const { tableName } = useUserEditingActiveStore()
@@ -58,7 +57,6 @@ export const useAutoLayout = () => {
       fitViewOptions: FitViewOptions = {},
     ) => {
       setLoading(true)
-      setInitializeComplete(true)
 
       // Update node visibility
       const updatedNodes = updateNodeVisibility(nodes, hiddenNodeIds)
@@ -84,14 +82,10 @@ export const useAutoLayout = () => {
         })
 
       // Perform auto layout if necessary
-      const finalVisibleNodes: Node[] = autoLayoutComplete
-        ? visibleNodes
-        : await getElkLayout({
-            nodes: highlightedNodes,
-            edges: highlightedEdges,
-          })
-
-      setAutoLayoutComplete(true)
+      const finalVisibleNodes: Node[] = await getElkLayout({
+        nodes: highlightedNodes,
+        edges: highlightedEdges,
+      })
 
       // Update nodes
       setNodes([...hiddenNodes, ...finalVisibleNodes])
@@ -103,18 +97,17 @@ export const useAutoLayout = () => {
         window.requestAnimationFrame(() => {
           fitView(fitViewOptions)
           setLoading(false)
+          setInitializeComplete(true)
         })
       }, 0)
     },
     [
       hiddenNodeIds,
       tableName,
-      autoLayoutComplete,
       setNodes,
       fitView,
       setLoading,
       setInitializeComplete,
-      setAutoLayoutComplete,
     ],
   )
 
