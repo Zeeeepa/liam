@@ -22,7 +22,7 @@ const searchParamsSchema = v.object({
   format: v.optional(supportedFormatSchema),
 })
 
-const resolveContentUrl = (url: string): string | undefined => {
+const resolveContentUrl = (url: string): string | unknown => {
   try {
     const parsedUrl = new URL(url)
 
@@ -33,8 +33,8 @@ const resolveContentUrl = (url: string): string | undefined => {
     }
 
     return url
-  } catch {
-    return undefined
+  } catch (e) {
+    return e
   }
 }
 
@@ -45,7 +45,6 @@ export async function generateMetadata({
   if (!parsedParams.success) return notFound()
 
   const joinedPath = parsedParams.output.slug.join('/')
-  if (!joinedPath) notFound()
 
   const projectUrl = `https://${joinedPath}`
 
@@ -81,21 +80,24 @@ export default async function Page({
 }: PageProps) {
   const parsedParams = v.safeParse(paramsSchema, await params)
   if (!parsedParams.success) {
+    // so unexpected errors
     notFound()
   }
 
   const joinedPath = parsedParams.output.slug.join('/')
-  if (!joinedPath) {
-    notFound()
-  }
 
   const url = `https://${joinedPath}`
   const contentUrl = resolveContentUrl(url)
-  if (!contentUrl) notFound()
+  // so unexpected errors
+  if (typeof(contentUrl) !== "string") {
+    Sentry.captureException(contentUrl)
+    return
+  }
 
-  const res = await fetch(contentUrl, { cache: 'no-store' }).catch(() => {
+  const res = await fetch(contentUrl, { cache: 'no-store' }).catch((e) => {
     notFound()
   })
+  // http error
   if (!res.ok) notFound()
 
   const input = await res.text()
