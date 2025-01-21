@@ -23,6 +23,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             id="liam-erd-introduction"
             variant="dark"
             link="https://liambx.com/blog/liam-erd-introduction"
+            ancherComponent={"a"}
           >
             {"We're launched Liam ERD!"}
           </Banner>

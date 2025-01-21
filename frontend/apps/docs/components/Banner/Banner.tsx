@@ -21,12 +21,14 @@ type Props = PropsWithChildren &
   HTMLAttributes<HTMLDivElement> & {
     variant: 'light' | 'dark'
     link: string
+    ancherComponent: 'a' | 'Link'
   }
 
 export const Banner: FC<Props> = ({
   variant,
   id,
   link,
+  ancherComponent = "Link",
   children,
   ...props
 }) => {
@@ -115,9 +117,16 @@ export const Banner: FC<Props> = ({
             {children}
           </p>
         </div>
-        <Link href={link} className={linkStyle({ variant })}>
-          Learn More
-        </Link>
+        {ancherComponent === 'a' && (
+          <a href={link} className={linkStyle({ variant })}>
+            Learn More
+          </a>
+        )}
+        {ancherComponent === 'Link' && (
+          <Link href={link} className={linkStyle({ variant })}>
+            Learn More
+          </Link>
+        )}
       </div>
       {id && (
         <button
