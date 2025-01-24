@@ -3,6 +3,8 @@ import type { Table } from '../../schema/index.js'
 import { aColumn, aDBStructure, aTable, anIndex } from '../../schema/index.js'
 import { processor as _processor } from './index.js'
 
+import { parserTestCases } from '../__tests__/index.js'
+
 describe(_processor, () => {
   const userTable = (override?: Partial<Table>) =>
     aDBStructure({
@@ -163,17 +165,7 @@ describe(_processor, () => {
         }
       `)
 
-      const expected = userTable({
-        columns: {
-          description: aColumn({
-            name: 'description',
-            type: 'String',
-            comment: 'this is description',
-          }),
-        },
-      })
-
-      expect(value).toEqual(expected)
+      expect(value).toEqual(parserTestCases['column comment'])
     })
 
     it('table comment', async () => {
