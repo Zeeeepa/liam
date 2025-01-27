@@ -6,6 +6,8 @@ import { ToolbarButton } from '@radix-ui/react-toolbar'
 import { useReactFlow, useStore } from '@xyflow/react'
 import { type FC, useCallback } from 'react'
 import styles from './ZoomControls.module.css'
+import { FitviewButton } from './FitviewButton'
+import { TidyUpButton } from './TidyUpButton'
 
 export const ZoomControls: FC = () => {
   const zoomLevel = useStore((store) => store.transform[2])
@@ -50,12 +52,22 @@ export const ZoomControls: FC = () => {
         </div>
       </div>
       <hr className={styles.divider} /> 
-      <ToolbarButton asChild onClick={handleClickZoomOut}>
-        <IconButton icon={<Minus />} tooltipContent="Zoom Out" />
-      </ToolbarButton>
-      <ToolbarButton asChild onClick={handleClickZoomIn}>
-        <IconButton icon={<Plus />} tooltipContent="Zoom In" />
-      </ToolbarButton>
+      <div className={styles.buttonGroup}>
+        <ToolbarButton asChild onClick={handleClickZoomIn} className={styles.menuButton}>
+          <IconButton icon={<Plus />} tooltipContent="Zoom In">
+            Zoom in
+          </IconButton>
+        </ToolbarButton>
+        <ToolbarButton asChild onClick={handleClickZoomOut} className={styles.menuButton}>
+          <IconButton icon={<Minus />} tooltipContent="Zoom Out">
+            Zoom out
+          </IconButton>
+        </ToolbarButton>
+
+        <FitviewButton />
+        <TidyUpButton />
+      </div>
+      <hr className={styles.divider} /> 
     </div>
   )
 }

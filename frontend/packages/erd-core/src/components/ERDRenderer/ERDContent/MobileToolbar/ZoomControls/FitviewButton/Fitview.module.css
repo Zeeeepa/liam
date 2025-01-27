@@ -1,0 +1,17 @@
+.menuButton {
+  display: flex;
+  padding: var(--spacing-2, 8px) var(--spacing-1, 4px);
+  align-items: center;
+  gap: var(--spacing-2, 8px);
+  align-self: stretch;
+
+  border-radius: var(--border-radius-sm, 2px);
+
+  color: var(--global-foreground, #FFF);
+  /* Typography/2/Regular */
+  font-family: var(--main-font, Inter);
+  font-size: var(--font-size-2, 11px);
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}

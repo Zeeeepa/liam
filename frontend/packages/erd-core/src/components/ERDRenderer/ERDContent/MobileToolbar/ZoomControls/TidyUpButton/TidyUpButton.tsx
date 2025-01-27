@@ -1,31 +1,39 @@
 import { toolbarActionLogEvent } from '@/features/gtm/utils'
 import { useVersion } from '@/providers'
 import { useUserEditingStore } from '@/stores'
-import { IconButton, Scan } from '@liam-hq/ui'
+import { IconButton, TidyUpIcon } from '@liam-hq/ui'
 import { ToolbarButton } from '@radix-ui/react-toolbar'
 import { useReactFlow } from '@xyflow/react'
 import { type FC, useCallback } from 'react'
+import { useAutoLayout } from '../../../useAutoLayout'
+import styles from './TidyUpButton.module.css'
 
-export const FitviewButton: FC = () => {
-  const { fitView } = useReactFlow()
+export const TidyUpButton: FC = () => {
+  const { getNodes, getEdges } = useReactFlow()
+  const { handleLayout } = useAutoLayout()
   const { showMode } = useUserEditingStore()
   const { version } = useVersion()
-
   const handleClick = useCallback(() => {
     toolbarActionLogEvent({
-      element: 'fitview',
+      element: 'tidyUp',
       showMode,
       platform: version.displayedOn,
       gitHash: version.gitHash,
       ver: version.version,
       appEnv: version.envName,
     })
-    fitView()
-  }, [fitView, showMode, version])
+    handleLayout(getNodes(), getEdges())
+  }, [handleLayout, showMode, getNodes, getEdges, version])
 
   return (
-    <ToolbarButton asChild onClick={handleClick}>
-      <IconButton icon={<Scan />} tooltipContent="Zoom to Fit" />
+    <ToolbarButton asChild className={styles.menuButton}>
+      <IconButton
+        icon={<TidyUpIcon />}
+        tooltipContent="Tidy up"
+        onClick={handleClick}
+      >
+        Tidy up
+      </IconButton>
     </ToolbarButton>
   )
 }
