@@ -1,4 +1,4 @@
-@media screen and (min-width: 768px) {
+@media screen and (max-width: 768px) {
   .root {
     display: inline-flex;
     padding: var(--spacing-1half) var(--spacing-2);

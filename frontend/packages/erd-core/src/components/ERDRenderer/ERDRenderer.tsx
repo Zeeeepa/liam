@@ -13,6 +13,7 @@ import { useDBStructureStore, useUserEditingStore } from '@/stores'
 import { CardinalityMarkers } from './CardinalityMarkers'
 // biome-ignore lint/nursery/useImportRestrictions: Fixed in the next PR.
 import { Toolbar } from './ERDContent/Toolbar'
+import { Toolbar as MobileToolbar } from './ERDContent/MobileToolbar'
 import { ErrorDisplay } from './ErrorDisplay'
 import { RelationshipEdgeParticleMarker } from './RelationshipEdgeParticleMarker'
 import { TableDetailDrawer, TableDetailDrawerRoot } from './TableDetailDrawer'
@@ -83,7 +84,7 @@ export const ERDRenderer: FC<Props> = ({
                         edges={edges}
                       />
                       <div className={styles.toolbarWrapper}>
-                        <Toolbar />
+                        <MobileToolbar />
                       </div>
                       <TableDetailDrawer />
                     </>
