@@ -8,6 +8,7 @@ import { type FC, useCallback } from 'react'
 import styles from './ZoomControls.module.css'
 import { FitviewButton } from './FitviewButton'
 import { TidyUpButton } from './TidyUpButton'
+import { ShowModeMenu } from './ShowModeMenu'
 
 export const ZoomControls: FC = () => {
   const zoomLevel = useStore((store) => store.transform[2])
@@ -68,6 +69,11 @@ export const ZoomControls: FC = () => {
         <TidyUpButton />
       </div>
       <hr className={styles.divider} /> 
+
+      <ShowModeMenu />
+      <button className={styles.button}>
+        close
+      </button>
     </div>
   )
 }

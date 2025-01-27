@@ -66,3 +66,26 @@
   font-weight: 400;
   line-height: normal;
 }
+
+.button {
+  display: flex;
+  height: 23px;
+  padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-1half, 6px);
+  align-self: stretch;
+  width: 100%;
+
+  border-radius: var(--border-radius-base, 4px);
+  border: 1px solid var(--button-border, #434546);
+
+  color: var(--button-secondary-foreground, #FFF);
+
+  /* Typography/3/Medium */
+  font-family: var(--main-font, Inter);
+  font-size: var(--font-size-3, 12px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
