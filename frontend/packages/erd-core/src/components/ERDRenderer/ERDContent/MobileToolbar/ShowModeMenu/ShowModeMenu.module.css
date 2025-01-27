@@ -1,8 +1,8 @@
 .wrapper {
-  display: grid;
-  grid-auto-flow: column;
-  gap: var(--spacing-1);
+  display: flex;
+  padding-left: var(--spacing-1, 4px);
   align-items: center;
+  gap: var(--spacing-1, 4px);
 }
 
 .label {

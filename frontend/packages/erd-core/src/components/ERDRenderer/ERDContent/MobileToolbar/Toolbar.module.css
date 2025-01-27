@@ -10,6 +10,12 @@
     position: fixed;
     left: 16px;
     bottom: 16px;
+
+    padding: var(--spacing-2, 8px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--spacing-2, 8px);
   }
   
   .separator {
