@@ -3,6 +3,7 @@ import * as ToolbarPrimitive from '@radix-ui/react-toolbar'
 import type { FC } from 'react'
 import styles from './Toolbar.module.css'
 import { ZoomControls } from './ZoomControls'
+import { Ellipsis } from '@liam-hq/ui'
 
 export const Toolbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,8 +15,8 @@ export const Toolbar: FC = () => {
       <ZoomControls setIsOpen={close}/>
     </ToolbarPrimitive.Root>
     :
-    <div className={styles.root}>
-      <button onClick={() => setIsOpen(true)}>...</button>
-    </div>
+    <button onClick={() => setIsOpen(true)} className={styles.root}>
+      <Ellipsis color="#FFF"/>
+    </button>
   )
 }
