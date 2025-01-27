@@ -1,16 +1,38 @@
 .wrapper {
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  gap: var(--spacing-1);
+  display: flex;
+  padding: var(--spacing-2, 8px);
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--spacing-2, 8px);
 }
 
 .zoomLevelText {
-  color: var(--global-foreground);
-  text-align: center;
-  font-family: var(--code-font);
-  font-size: var(--font-size-3);
+  display: flex;
+  width: 100%;
+  padding: var(--spacing-1, 4px);
+  gap: var(--spacing-1, 4px);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zoom {
+  color: var(--overlay-60, rgba(255, 255, 255, 0.60));
+  /* Typography/3/Regular */
+  font-family: var(--main-font, Inter);
+  font-size: var(--font-size-3, 12px);
   font-style: normal;
   font-weight: 400;
-  line-height: 100%;
+  line-height: normal;
 }
+
+.zoomPercent {
+  color: var(--global-foreground, #FFF);
+  text-align: center;
+  font-family: var(--code-font, "IBM Plex Mono");
+  font-size: var(--font-size-3, 12px);
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+ 

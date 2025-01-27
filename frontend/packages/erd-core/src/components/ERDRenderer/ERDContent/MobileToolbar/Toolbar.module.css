@@ -1,11 +1,16 @@
 @media screen and (max-width: 768px) {
   .root {
+    /*
     display: inline-flex;
-    padding: var(--spacing-1half) var(--spacing-2);
+    */
     border: 1px solid var(--global-border);
     border-radius: var(--border-radius-lg);
     background-color: var(--pane-background);
     box-shadow: 0px 4px 20px 0px var(--shadow-basic-shadow);
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    padding: var(--spacing-1half) var(--spacing-2);
   }
   
   .separator {
