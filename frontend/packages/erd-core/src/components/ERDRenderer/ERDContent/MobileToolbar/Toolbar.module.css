@@ -10,7 +10,6 @@
     position: fixed;
     left: 16px;
     bottom: 16px;
-    padding: var(--spacing-1half) var(--spacing-2);
   }
   
   .separator {

@@ -49,6 +49,7 @@ export const ZoomControls: FC = () => {
           {Math.floor(zoomLevel * 100)}%
         </div>
       </div>
+      <hr className={styles.divider} /> 
       <ToolbarButton asChild onClick={handleClickZoomOut}>
         <IconButton icon={<Minus />} tooltipContent="Zoom Out" />
       </ToolbarButton>

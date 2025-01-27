@@ -10,14 +10,13 @@ export const Toolbar: FC = () => {
   return (
     <ToolbarPrimitive.Root className={styles.root}>
       <ZoomControls />
-      <ToolbarPrimitive.Separator className={styles.separator} />
+      <ToolbarPrimitive.ToolbarSeparator className={styles.separator} />
       <div className={styles.buttons}>
         <FitviewButton />
         <TidyUpButton />
         {/* TODO: enable once implemented */}
         {/* <ViewControlButton /> */}
       </div>
-      <ToolbarPrimitive.Separator className={styles.separator} />
       <ShowModeMenu />
     </ToolbarPrimitive.Root>
   )
