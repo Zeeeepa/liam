@@ -10,7 +10,11 @@ import { FitviewButton } from './FitviewButton'
 import { TidyUpButton } from './TidyUpButton'
 import { ShowModeMenu } from './ShowModeMenu'
 
-export const ZoomControls: FC = () => {
+type Props = {
+  setIsOpen: () => void
+}
+
+export const ZoomControls: FC<Props> = ({setIsOpen}) => {
   const zoomLevel = useStore((store) => store.transform[2])
   const { zoomIn, zoomOut } = useReactFlow()
   const { showMode } = useUserEditingStore()
@@ -71,7 +75,7 @@ export const ZoomControls: FC = () => {
       <hr className={styles.divider} /> 
 
       <ShowModeMenu />
-      <button className={styles.button}>
+      <button className={styles.button} onClick={setIsOpen}>
         close
       </button>
     </div>
