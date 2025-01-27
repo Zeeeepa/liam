@@ -5,16 +5,16 @@ import { IconButton, Minus, Plus } from '@liam-hq/ui'
 import { ToolbarButton } from '@radix-ui/react-toolbar'
 import { useReactFlow, useStore } from '@xyflow/react'
 import { type FC, useCallback } from 'react'
-import styles from './ZoomControls.module.css'
 import { FitviewButton } from './FitviewButton'
-import { TidyUpButton } from './TidyUpButton'
 import { ShowModeMenu } from './ShowModeMenu'
+import { TidyUpButton } from './TidyUpButton'
+import styles from './ZoomControls.module.css'
 
 type Props = {
   setIsOpen: () => void
 }
 
-export const ZoomControls: FC<Props> = ({setIsOpen}) => {
+export const ZoomControls: FC<Props> = ({ setIsOpen }) => {
   const zoomLevel = useStore((store) => store.transform[2])
   const { zoomIn, zoomOut } = useReactFlow()
   const { showMode } = useUserEditingStore()
@@ -49,21 +49,25 @@ export const ZoomControls: FC<Props> = ({setIsOpen}) => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.zoomLevelText}>
-        <div className={styles.zoom}>
-          Zoom 
-        </div>
-        <div className={styles.zoomPercent}>
-          {Math.floor(zoomLevel * 100)}%
-        </div>
+        <div className={styles.zoom}>Zoom</div>
+        <div className={styles.zoomPercent}>{Math.floor(zoomLevel * 100)}%</div>
       </div>
-      <hr className={styles.divider} /> 
+      <hr className={styles.divider} />
       <div className={styles.buttonGroup}>
-        <ToolbarButton asChild onClick={handleClickZoomIn} className={styles.menuButton}>
+        <ToolbarButton
+          asChild
+          onClick={handleClickZoomIn}
+          className={styles.menuButton}
+        >
           <IconButton icon={<Plus />} tooltipContent="Zoom In">
             Zoom in
           </IconButton>
         </ToolbarButton>
-        <ToolbarButton asChild onClick={handleClickZoomOut} className={styles.menuButton}>
+        <ToolbarButton
+          asChild
+          onClick={handleClickZoomOut}
+          className={styles.menuButton}
+        >
           <IconButton icon={<Minus />} tooltipContent="Zoom Out">
             Zoom out
           </IconButton>
@@ -72,7 +76,7 @@ export const ZoomControls: FC<Props> = ({setIsOpen}) => {
         <FitviewButton />
         <TidyUpButton />
       </div>
-      <hr className={styles.divider} /> 
+      <hr className={styles.divider} />
 
       <ShowModeMenu />
       <button className={styles.button} onClick={setIsOpen}>

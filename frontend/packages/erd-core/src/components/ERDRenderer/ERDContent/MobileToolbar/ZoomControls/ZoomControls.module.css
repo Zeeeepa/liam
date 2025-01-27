@@ -17,7 +17,7 @@
 }
 
 .zoom {
-  color: var(--overlay-60, rgba(255, 255, 255, 0.60));
+  color: var(--overlay-60, rgba(255, 255, 255, 0.6));
   /* Typography/3/Regular */
   font-family: var(--main-font, Inter);
   font-size: var(--font-size-3, 12px);
@@ -27,19 +27,19 @@
 }
 
 .zoomPercent {
-  color: var(--global-foreground, #FFF);
+  color: var(--global-foreground, #fff);
   text-align: center;
-  font-family: var(--code-font, "IBM Plex Mono");
+  font-family: var(--code-font, 'IBM Plex Mono');
   font-size: var(--font-size-3, 12px);
   font-style: normal;
   font-weight: 400;
   line-height: normal;
 }
- 
+
 .divider {
   width: 100%;
   height: 1px;
-  color: #383A3B;
+  color: #383a3b;
 }
 
 .buttonGroup {
@@ -58,7 +58,7 @@
 
   border-radius: var(--border-radius-sm, 2px);
 
-  color: var(--global-foreground, #FFF);
+  color: var(--global-foreground, #fff);
   /* Typography/2/Regular */
   font-family: var(--main-font, Inter);
   font-size: var(--font-size-2, 11px);
@@ -80,7 +80,7 @@
   border-radius: var(--border-radius-base, 4px);
   border: 1px solid var(--button-border, #434546);
 
-  color: var(--button-secondary-foreground, #FFF);
+  color: var(--button-secondary-foreground, #fff);
 
   /* Typography/3/Medium */
   font-family: var(--main-font, Inter);
