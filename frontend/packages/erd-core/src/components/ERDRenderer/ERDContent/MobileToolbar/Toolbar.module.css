@@ -2,25 +2,21 @@
   from {
     width: 40px;
     height: 40px;
-    transform: translateY(0);
   }
   to {
     width: 200px;
-    height: 100px;
-    transform: translateY(-60px); /* 画面外にはみ出さないよう持ち上げる */
+    /* height: 150px; /* 高さをしっかり確保 */
   }
 }
 
 @keyframes collapse {
   from {
     width: 200px;
-    height: 100px;
-    transform: translateY(-60px);
+    height: 150px;
   }
   to {
     width: 40px;
     height: 40px;
-    transform: translateY(0);
   }
 }
 
@@ -32,15 +28,16 @@
     box-shadow: 0px 4px 20px 0px var(--shadow-basic-shadow);
     position: fixed;
     left: 16px;
-    bottom: 16px;
+    bottom: 16px; /* 常に固定 */
     padding: var(--spacing-2, 8px);
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-2, 8px);
-    transition: width 300ms ease, height 300ms ease, transform 300ms ease;
-    overflow: hidden;
-    min-height: 40px; /* 初期サイズを確保 */
+    transition: width 300ms ease, height 300ms ease;
+    overflow: hidden; /* コンテンツのはみ出し防止 */
+    min-height: 40px;
+    max-height: 50vh; /* 画面の半分まで伸びる */
   }
 }
 
@@ -52,7 +49,7 @@
   animation: collapse 300ms ease-in forwards;
 }
 
-.button-container {
+.buttonContainer {
   display: flex;
   justify-content: center;
   align-items: center;
