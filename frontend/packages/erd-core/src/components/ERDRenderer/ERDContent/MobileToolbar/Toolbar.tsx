@@ -8,21 +8,18 @@ import { ZoomControls } from './ZoomControls'
 export const Toolbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const open = () => setIsOpen(true)
-  const close = () => setIsOpen(false)
+  const toggle = () => setIsOpen((prev) => !prev)
 
   return (
-    <div>
-      <ToolbarPrimitive.Root
-        className={`${styles.root} ${isOpen ? styles.open : styles.closed}`}
-      >
-        <ZoomControls setIsOpen={close} />
-      </ToolbarPrimitive.Root>
-      {!isOpen && (
-        <button onClick={open} className={styles.root}>
+    <ToolbarPrimitive.Root className={`${styles.root} ${isOpen ? styles.open : styles.closed}`}>
+      <div className={isOpen ? styles.hidden : styles.buttonContainer}>
+        <button onClick={toggle} className={styles.button}>
           <Ellipsis color="#FFF" />
         </button>
-      )}
-    </div>
+      </div>
+      <div className={!isOpen ? styles.hidden : ''}>
+        <ZoomControls setIsOpen={toggle} />
+      </div>
+    </ToolbarPrimitive.Root>
   )
 }
