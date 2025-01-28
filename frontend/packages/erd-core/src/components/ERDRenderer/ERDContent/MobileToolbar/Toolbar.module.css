@@ -1,11 +1,13 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.8); /* より小さくして変化を強調 */
+    border-width: 0px;
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.1); /* 一度少し大きくなる */
+    border-width: 2px;
   }
 }
 
@@ -13,16 +15,18 @@
   from {
     opacity: 1;
     transform: scale(1);
+    border-width: 2px;
   }
   to {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.8);
+    border-width: 0px;
   }
 }
 
 @media screen and (max-width: 768px) {
   .root {
-    border: 1px solid var(--global-border);
+    border: 2px solid var(--global-border);
     border-radius: var(--border-radius-lg);
     background-color: var(--pane-background);
     box-shadow: 0px 4px 20px 0px var(--shadow-basic-shadow);
@@ -34,7 +38,7 @@
     justify-content: center;
     align-items: flex-start;
     gap: var(--spacing-2, 8px);
-    transition: opacity 300ms ease, transform 300ms ease;
+    transition: opacity 300ms ease, transform 300ms ease, border-width 300ms ease;
   }
 }
 
@@ -45,5 +49,5 @@
 .closed {
   animation: fadeOut 300ms ease-in forwards;
   opacity: 0;
-  pointer-events: none; /* アニメーション中の不要なクリックを防ぐ */
+  pointer-events: none;
 }
