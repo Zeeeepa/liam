@@ -63,6 +63,19 @@
   height: 100%;
 }
 
+.buttonContainer button {
+  width: 100%;  /* ボタンをコンテナのサイズいっぱいに */
+  height: 100%;
+  min-width: 40px;  /* 最低限のタップ範囲を確保 */
+  min-height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .hidden {
   display: none;
 }
