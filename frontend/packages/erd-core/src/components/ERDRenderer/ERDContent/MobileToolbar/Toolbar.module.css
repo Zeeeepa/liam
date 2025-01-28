@@ -2,10 +2,12 @@
   from {
     width: 40px;
     height: 40px;
+    transform: translateY(0);
   }
   to {
     width: 200px;
     height: 100px;
+    transform: translateY(-60px); /* 画面外にはみ出さないよう持ち上げる */
   }
 }
 
@@ -13,10 +15,12 @@
   from {
     width: 200px;
     height: 100px;
+    transform: translateY(-60px);
   }
   to {
     width: 40px;
     height: 40px;
+    transform: translateY(0);
   }
 }
 
@@ -34,8 +38,9 @@
     justify-content: center;
     align-items: center;
     gap: var(--spacing-2, 8px);
-    transition: width 300ms ease, height 300ms ease;
+    transition: width 300ms ease, height 300ms ease, transform 300ms ease;
     overflow: hidden;
+    min-height: 40px; /* 初期サイズを確保 */
   }
 }
 
@@ -47,7 +52,7 @@
   animation: collapse 300ms ease-in forwards;
 }
 
-.buttonContainer {
+.button-container {
   display: flex;
   justify-content: center;
   align-items: center;
