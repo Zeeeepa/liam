@@ -1,6 +1,6 @@
 @keyframes collapse {
   from {
-    width: 170px; /* TODO: 157px */
+    width: 157px;
     height: 245px;
   }
   to {
@@ -15,7 +15,7 @@
     height: 40px;
   }
   to {
-    width: 170px;
+    width: 157px;
     height: 245px;
   }
 }
@@ -53,14 +53,14 @@
   }
 }
 
-.initial {
+.initialClosed {
   width: 40px;
   height: 40px;
   animation: none;
 }
 
 .initialOpen {
-  width: 170px;
+  width: 157px;
   height: 245px;
   animation: none;
 }

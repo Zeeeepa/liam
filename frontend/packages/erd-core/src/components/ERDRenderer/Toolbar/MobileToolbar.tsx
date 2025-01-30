@@ -69,7 +69,7 @@ export const MobileToolbar: FC = () => {
         [styles.open]: hasInteracted && isOpen,
         [styles.initialOpen]: !hasInteracted && isOpen,
         [styles.closed]: hasInteracted && !isOpen,
-        [styles.initial]: !hasInteracted && !isOpen,
+        [styles.initialClosed]: !hasInteracted && !isOpen,
       })}
     >
       <div className={isOpen ? styles.hidden : styles.ellipsis}>
