@@ -17,10 +17,15 @@ import { TidyUpButton } from './TidyUpButton'
 export const MobileToolbar: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
+  const [isShowModeMenu, setIsShowModeMenu] = useState(false)
 
   const toggle = () => {
     setIsOpen((prev) => !prev)
     setHasInteracted(true)
+  }
+
+  const toggleShowModeMenu = () => {
+    setIsShowModeMenu((prev) => !prev)
   }
 
   useEffect(() => {
@@ -66,10 +71,13 @@ export const MobileToolbar: FC = () => {
   return (
     <ToolbarPrimitive.Root
       className={clsx(styles.root, {
-        [styles.open]: hasInteracted && isOpen,
-        [styles.initialOpen]: !hasInteracted && isOpen,
+        [styles.open]: hasInteracted && isOpen && !isShowModeMenu,
+        [styles.initialOpen]: !hasInteracted && isOpen && !isShowModeMenu,
         [styles.closed]: hasInteracted && !isOpen,
-        [styles.initialClosed]: !hasInteracted && !isOpen,
+        [styles.initialClosed]: !hasInteracted,
+      },{
+        [styles.open]: hasInteracted && isOpen && isShowModeMenu,
+        [styles.initialOpen]: !hasInteracted && isOpen && isShowModeMenu,
       })}
     >
       <div className={isOpen ? styles.hidden : styles.ellipsis}>
@@ -77,7 +85,7 @@ export const MobileToolbar: FC = () => {
           <Ellipsis color="var(--global-foreground)" />
         </button>
       </div>
-      <div className={!isOpen ? styles.hidden : ''}>
+      <div className={isOpen && !isShowModeMenu ? '' : styles.hidden}>
         <div className={styles.wrapper}>
           <div className={styles.zoomLevelText}>
             <div className={styles.zoom}>Zoom</div>
@@ -111,8 +119,28 @@ export const MobileToolbar: FC = () => {
           </div>
           <hr className={styles.divider} />
 
-          {/* TODO: Apply mobile design */}
-          <ShowModeMenu />
+          <button type="button" className={styles.closeButton} onClick={toggleShowModeMenu}>
+            showMode
+          </button>
+
+
+          <button type="button" className={styles.closeButton} onClick={toggle}>
+            close
+          </button>
+        </div>
+      </div>
+
+      {/* new */}
+      <div className={isOpen && isShowModeMenu ? '' : styles.hidden}>
+        <div className={styles.wrapper}>
+          <hr className={styles.divider} />
+          <div className={styles.buttonGroup}>
+          </div>
+          <hr className={styles.divider} />
+
+          <button type="button" className={styles.closeButton} onClick={toggleShowModeMenu}>
+            showMode
+          </button>
 
           <button type="button" className={styles.closeButton} onClick={toggle}>
             close
