@@ -1,38 +1,61 @@
 /**
- * Processes a large SQL input string in chunks, ensuring that each chunk ends with a complete SQL statement.
+ * Processes a large SQL input string in chunks (by line count)
  *
  * @param input - The large SQL input string to be processed.
- * @param chunkSize - The number of lines to include in each chunk.
- * @param callback - An asynchronous callback function to process each chunk of SQL statements.
+ * @param chunkSize - The number of lines to include in each chunk (e.g., 500).
+ * @param callback - An asynchronous callback function that processes each chunk.
  */
 export const processSQLInChunks = async (
   input: string,
   chunkSize: number,
-  callback: (chunk: string) => Promise<void>,
+  callback: (chunk: string) => Promise<[number | null, number | null]>,
 ): Promise<void> => {
-  const semicolon = ';'
-  // Even though the parser can handle "--", we remove such lines for ease of splitting by semicolons.
-  const lines = input.split('\n').filter((line) => !line.startsWith('--'))
+  const lines = input.split('\n')
 
-  let partialStmt = ''
+  let trySize = 0
+  for (let i = 0; i < lines.length; ) {
+    trySize = chunkSize
+    let looping = true
+    let strategy = -1
 
-  for (let i = 0; i < lines.length; i += chunkSize) {
-    const chunk = lines.slice(i, i + chunkSize).join('\n')
-    const combined = partialStmt + chunk
+    while (looping) {
+      const chunk = lines.slice(i, i + trySize).join('\n')
 
-    const lastSemicolonIndex = combined.lastIndexOf(semicolon)
-    if (lastSemicolonIndex === -1) {
-      partialStmt = combined
-      continue
+      const [errorPosition, readPosition] = await callback(chunk)
+
+      if (errorPosition !== null) {
+        if (strategy === -1) {
+          trySize--
+          if (trySize === 0) {
+            strategy = 1
+            trySize = chunkSize + 1
+          }
+        } else if (strategy === 1) {
+          trySize++
+        }
+      } else if (readPosition !== null) {
+        const lineno = getLineNumber(chunk, readPosition)
+        i += lineno || trySize
+        looping = false
+      } else {
+        i += trySize
+        looping = false
+      }
     }
+  }
+}
 
-    const parseablePart = combined.slice(0, lastSemicolonIndex + 1)
-    partialStmt = combined.slice(lastSemicolonIndex + 1)
-    await callback(parseablePart)
+function getLineNumber(s: string, n: number): number | null {
+  if (n < 0 || n >= s.length) return null
+
+  let line = 1
+  let count = 0
+
+  for (const char of s) {
+    if (count === n) return line
+    if (char === '\n') line++
+    count++
   }
 
-  // Process the last remaining statement.
-  if (partialStmt.trim()) {
-    await callback(partialStmt)
-  }
+  return null
 }

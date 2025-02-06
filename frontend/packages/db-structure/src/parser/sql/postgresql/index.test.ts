@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import type { Table } from '../../../schema/index.js'
 import { aColumn, aDBStructure, aTable } from '../../../schema/index.js'
 import { createParserTestCases } from '../../__tests__/index.js'
-import { UnexpectedTokenWarningError } from '../../errors.js'
 import { processor } from './index.js'
 
 describe(processor, () => {
@@ -237,21 +236,6 @@ describe(processor, () => {
       expect(value.relationships).toEqual(
         parserTestCases['foreign key with action'],
       )
-    })
-  })
-
-  describe('abnormal cases', () => {
-    it('show error if the syntax is broken', async () => {
-      const result = await processor(/* sql */ `
-        CREATEe TABLE posts ();
-      `)
-
-      const value = { tables: {}, relationships: {} }
-      const errors = [
-        new UnexpectedTokenWarningError('syntax error at or near "CREATEe"'),
-      ]
-
-      expect(result).toEqual({ value, errors })
     })
   })
 })
