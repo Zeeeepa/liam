@@ -10,6 +10,7 @@ export const processSQLInChunks = async (
   chunkSize: number,
   callback: (chunk: string) => Promise<[number | null, number | null]>,
 ): Promise<void> => {
+  if (sqlInput === '') return
   const lines = sqlInput.split('\n')
   let currentChunkSize = 0
 

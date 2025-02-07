@@ -9,7 +9,7 @@ import { processSQLInChunks } from './processSQLInChunks.js'
 /**
  * Processes SQL statements and constructs a database structure.
  */
-export const processSQL: Processor = async (sql: string) => {
+export const processor: Processor = async (sql: string) => {
   const dbSchema: DBStructure = { tables: {}, relationships: {} }
   const CHUNK_SIZE = 500
   const parseErrors: ProcessError[] = []
