@@ -6,52 +6,59 @@ import { mergeDBStructures } from './mergeDBStructures.js'
 import { parse } from './parser.js'
 import { processSQLInChunks } from './processSQLInChunks.js'
 
-export const processor: Processor = async (str: string) => {
-  const dbStructure: DBStructure = { tables: {}, relationships: {} }
+/**
+ * Processes SQL statements and constructs a database structure.
+ */
+export const processSQL: Processor = async (sql: string) => {
+  const dbSchema: DBStructure = { tables: {}, relationships: {} }
   const CHUNK_SIZE = 500
-  const errors: ProcessError[] = []
+  const parseErrors: ProcessError[] = []
 
-  await processSQLInChunks(str, CHUNK_SIZE, async (chunk) => {
-    let readPosition: number | null = null
-    let errorPosition: number | null = null
+  await processSQLInChunks(sql, CHUNK_SIZE, async (chunk) => {
+    let readOffset: number | null = null
+    let errorOffset: number | null = null
+
     const { parse_tree, error: parseError } = await parse(chunk)
 
-    if (parse_tree.stmts.length > 0) {
-      if (parseError !== null) {
-        throw new Error('UnexpectedCondition')
-      }
+    if (parse_tree.stmts.length > 0 && parseError !== null) {
+      throw new Error('UnexpectedCondition')
     }
 
     if (parseError !== null) {
-      errorPosition = parseError.cursorpos
-      // TODO: save error message
-      return [errorPosition, readPosition]
+      errorOffset = parseError.cursorpos
+      // TODO: Store error message for reporting
+      return [errorOffset, readOffset]
     }
 
-    let lastStmtCompleted = true
-    const l = parse_tree.stmts.length
-    if (l > 0) {
-      const last = parse_tree.stmts[l - 1]
-      if (last?.stmt_len === undefined) {
-        lastStmtCompleted = false
-        if (last?.stmt_location === undefined) {
+    let isLastStatementComplete = true
+    const statementCount = parse_tree.stmts.length
+
+    if (statementCount > 0) {
+      const lastStmt = parse_tree.stmts[statementCount - 1]
+      if (lastStmt?.stmt_len === undefined) {
+        isLastStatementComplete = false
+        if (lastStmt?.stmt_location === undefined) {
           throw new Error('UnexpectedCondition')
         }
-        readPosition = last?.stmt_location - 1
+        readOffset = lastStmt?.stmt_location - 1
       }
     }
 
-    const { value: converted, errors: convertErrors } = convertToDBStructure(
-      lastStmtCompleted ? parse_tree.stmts : parse_tree.stmts.slice(0, -1),
-    )
-    if (convertErrors !== null) {
-      errors.push(...convertErrors)
+    const { value: convertedSchema, errors: conversionErrors } =
+      convertToDBStructure(
+        isLastStatementComplete
+          ? parse_tree.stmts
+          : parse_tree.stmts.slice(0, -1),
+      )
+
+    if (conversionErrors !== null) {
+      parseErrors.push(...conversionErrors)
     }
 
-    mergeDBStructures(dbStructure, converted)
+    mergeDBStructures(dbSchema, convertedSchema)
 
-    return [errorPosition, readPosition]
+    return [errorOffset, readOffset]
   })
 
-  return { value: dbStructure, errors }
+  return { value: dbSchema, errors: parseErrors }
 }

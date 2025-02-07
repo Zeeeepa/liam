@@ -1,60 +1,66 @@
 /**
  * Processes a large SQL input string in chunks (by line count)
  *
- * @param input - The large SQL input string to be processed.
- * @param chunkSize - The number of lines to include in each chunk (e.g., 500).
- * @param callback - An asynchronous callback function that processes each chunk.
+ * @param sqlInput - The SQL input string to be processed.
+ * @param chunkSize - The number of lines per chunk (e.g., 500).
+ * @param callback - An asynchronous function to process each chunk.
  */
 export const processSQLInChunks = async (
-  input: string,
+  sqlInput: string,
   chunkSize: number,
   callback: (chunk: string) => Promise<[number | null, number | null]>,
 ): Promise<void> => {
-  const lines = input.split('\n')
+  const lines = sqlInput.split('\n')
+  let currentChunkSize = 0
 
-  let trySize = 0
   for (let i = 0; i < lines.length; ) {
-    trySize = chunkSize
-    let looping = true
-    let strategy = -1
+    currentChunkSize = chunkSize
+    let retryProcessing = true
+    let retryStrategy = -1
 
-    while (looping) {
-      const chunk = lines.slice(i, i + trySize).join('\n')
+    while (retryProcessing) {
+      const chunk = lines.slice(i, i + currentChunkSize).join('\n')
+      const [errorOffset, readOffset] = await callback(chunk)
 
-      const [errorPosition, readPosition] = await callback(chunk)
-
-      if (errorPosition !== null) {
-        if (strategy === -1) {
-          trySize--
-          if (trySize === 0) {
-            strategy = 1
-            trySize = chunkSize + 1
+      if (errorOffset !== null) {
+        if (retryStrategy === -1) {
+          currentChunkSize--
+          if (currentChunkSize === 0) {
+            retryStrategy = 1
+            currentChunkSize = chunkSize + 1
           }
-        } else if (strategy === 1) {
-          trySize++
+        } else if (retryStrategy === 1) {
+          currentChunkSize++
         }
-      } else if (readPosition !== null) {
-        const lineno = getLineNumber(chunk, readPosition)
-        i += lineno || trySize
-        looping = false
+      } else if (readOffset !== null) {
+        const lineNumber = getLineNumber(chunk, readOffset)
+        i += lineNumber || currentChunkSize
+        retryProcessing = false
       } else {
-        i += trySize
-        looping = false
+        i += currentChunkSize
+        retryProcessing = false
       }
     }
   }
 }
 
-function getLineNumber(s: string, n: number): number | null {
-  if (n < 0 || n >= s.length) return null
+/**
+ * Determines the line number in a string corresponding to a given character index.
+ *
+ * @param inputString - The string to search within.
+ * @param charIndex - The character index.
+ * @returns The line number, or null if the index is out of bounds.
+ */
+function getLineNumber(inputString: string, charIndex: number): number | null {
+  if (charIndex < 0 || charIndex >= inputString.length) return null
 
-  let line = 1
-  let count = 0
+  let lineNumber = 1
+  let currentIndex = 0
 
-  for (const char of s) {
-    if (count === n) return line
-    if (char === '\n') line++
-    count++
+  for (const char of inputString) {
+    if (currentIndex === charIndex) return lineNumber
+    if (char === '\n') lineNumber++
+    currentIndex++
   }
 
   return null
