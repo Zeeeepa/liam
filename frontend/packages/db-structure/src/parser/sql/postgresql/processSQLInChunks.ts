@@ -15,11 +15,13 @@ export const processSQLInChunks = async (
   let currentChunkSize = 0
 
   for (let i = 0; i < lines.length; ) {
+    console.error('Error processing')
     currentChunkSize = chunkSize
     let retryProcessing = true
     let retryStrategy = -1
 
     while (retryProcessing) {
+      console.error('Error processing6')
       const chunk = lines.slice(i, i + currentChunkSize).join('\n')
       const [errorOffset, readOffset] = await callback(chunk)
 
@@ -28,17 +30,23 @@ export const processSQLInChunks = async (
           currentChunkSize--
           if (currentChunkSize === 0) {
             retryStrategy = 1
-            currentChunkSize = chunkSize + 1
+            currentChunkSize = chunkSize
           }
         } else if (retryStrategy === 1) {
           currentChunkSize++
+          console.error('Error processing2')
+          throw new Error(currentChunkSize.toString())
         }
       } else if (readOffset !== null) {
         const lineNumber = getLineNumber(chunk, readOffset)
         i += lineNumber || currentChunkSize
+        console.error('Error processing3')
         retryProcessing = false
       } else {
         i += currentChunkSize
+        console.error('Error processing4')
+        console.error(currentChunkSize)
+        console.error(chunk)
         retryProcessing = false
       }
     }

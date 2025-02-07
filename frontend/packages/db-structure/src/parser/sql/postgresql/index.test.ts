@@ -240,18 +240,18 @@ describe(processor, () => {
     })
   })
 
-  //describe('abnormal cases', () => {
-  //  it('show error if the syntax is broken', async () => {
-  //    const result = await processor(/* sql */ `
-  //      CREATEe TABLE posts ();
-  //    `)
+  describe('abnormal cases', () => {
+    it.only('show error if the syntax is broken', async () => {
+      const result = await processor(/* sql */ `
+        CREATEe TABLE posts ();
+      `)
 
-  //    const value = { tables: {}, relationships: {} }
-  //    const errors = [
-  //      new UnexpectedTokenWarningError('syntax error at or near "CREATEe"'),
-  //    ]
+      const value = { tables: {}, relationships: {} }
+      const errors = [
+        new UnexpectedTokenWarningError('syntax error at or near "CREATEe"'),
+      ]
 
-  //    expect(result).toEqual({ value, errors })
-  //  })
-  //})
+      expect(result).toEqual({ value, errors })
+    })
+  })
 })
