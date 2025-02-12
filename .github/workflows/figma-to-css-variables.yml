@@ -1,4 +1,4 @@
-name: Figma to CSS Variables
+name: test
 
 on:
   workflow_dispatch:
@@ -17,15 +17,12 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/pnpm-setup
-      - run: pnpm --filter @packages/figma-to-css-variables sync --output '../../apps/service-site/src/styles' --filter-modes "Dark,Mode 1"
-        env:
-          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
-          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
-      - uses: peter-evans/create-pull-request@v5
-        with:
-          commit-message: "maintenance: Sync Figma to CSS Variables"
-          branch: "maintenance/sync-figma-to-css-variables"
-          delete-branch: true
-          title: "maintenance: Sync Figma to CSS Variables"
+      - name: check @liam-hq/cli exit code
+        shell: bash
+        run: |
+          version="0.3.5"
+          if [ -z "${version}" ]; then
+            echo "Error: Failed to extract version from package.json"
+            exit 1
+          fi
+          docker run --rm node:22-bullseye npx --yes @liam-hq/cli@${version} --version
