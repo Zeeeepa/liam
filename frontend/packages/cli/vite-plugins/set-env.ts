@@ -12,6 +12,10 @@ import { type Plugin, loadEnv } from 'vite'
  * These variables are essential for maintaining version consistency and tracking within the deployment environment.
  */
 export function setEnvPlugin(): Plugin {
+  const remoteAddOrigin = () => {
+    execSync('git remote add origin https://github.com/liam-hq/liam.git')
+  }
+
   const fetchGitHash = () => {
     try {
       return execSync('git rev-parse HEAD').toString().trim()
@@ -40,39 +44,20 @@ export function setEnvPlugin(): Plugin {
     }
   }
 
-  const versionPrefix = 'refs/tags/@liam-hq/cli@'
+  const versionPrefix = '@liam-hq/cli@'
 
   const isReleasedGitHash = (gitHash: string, packageJsonVersion: string) => {
     const latestTagName = `${versionPrefix}${packageJsonVersion}`
     try {
       execSync('git fetch --tags')
       console.log('git remote show', execSync('git remote show').toString())
-
-      const tagList = execSync('git tag -l').toString()
-      // Get the tag from remote because it cannot be obtained by automatic deployment of Vercel.
-      if (!tagList.includes(latestTagName)) {
-        const lsRemoteOutput = execSync(
-          'git ls-remote --tags https://github.com/liam-hq/liam.git',
-        )
-          .toString()
-          .trim()
-        const tagCommit = lsRemoteOutput
-          .split('\n')
-          .find((line) => line.includes(latestTagName))
-          ?.split('\t')[0]
-
-        if (!tagCommit) {
-          console.error(`Tag ${latestTagName} not found in ls-remote output`)
-        }
-
-        return gitHash === tagCommit ? 1 : 0
-      }
-
-      const tagCommit = execSync(`git rev-parse '${latestTagName}'`)
+      const tagCommit = execSync(`git rev-parse ${latestTagName}`)
         .toString()
         .trim()
-
-      return gitHash === tagCommit ? 1 : 0
+      if (gitHash === tagCommit) {
+        return 1
+      }
+      return 0
     } catch (error) {
       console.error('Failed to get git tag:', error)
       return 0
@@ -82,6 +67,7 @@ export function setEnvPlugin(): Plugin {
   return {
     name: 'set-env',
     config(_, { mode }) {
+      remoteAddOrigin()
       const env = loadEnv(mode, process.cwd(), '')
 
       const packageJsonVersion = env.npm_package_version
