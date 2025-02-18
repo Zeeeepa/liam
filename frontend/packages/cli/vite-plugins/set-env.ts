@@ -46,6 +46,7 @@ export function setEnvPlugin(): Plugin {
     const latestTagName = `${versionPrefix}${packageJsonVersion}`
     try {
       execSync('git fetch --tags')
+      console.log('git remote show', execSync('git remote show').toString())
 
       const tagList = execSync('git tag -l').toString()
       // Get the tag from remote because it cannot be obtained by automatic deployment of Vercel.
