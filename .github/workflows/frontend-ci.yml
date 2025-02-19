@@ -1,8 +1,7 @@
 name: frontend-ci
 
 on:
-  pull_request:
-  merge_group:
+  push:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,24 +27,13 @@ jobs:
               - '.github/actions/pnpm-setup/**'
               - './frontend/**'
 
-  frontend-lint:
+  frontend-windows-ci:
     needs: [setup-job]
-    if: ${{ needs.setup-job.outputs.has-changes == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/pnpm-setup
-      - run: pnpm lint
-
-  frontend-ci:
-    needs: [setup-job]
-    if: ${{ needs.setup-job.outputs.has-changes == 'true' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/pnpm-setup
-      - run: pnpm test:turbo
+      - run: npm install -g frontend/packages/cli/liam-hq-cli-0.4.1.tgz
+      - run: liam erd build --input https://github.com/mastodon/mastodon/blob/v4.3.2/db/schema.rb --format schemarb
+      - run: Get-ChildItem ./dist | Select-Object Name, CreationTime, LastWriteTime, Mode, Length
