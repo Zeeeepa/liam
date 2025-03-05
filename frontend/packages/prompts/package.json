@@ -1,0 +1,23 @@
+{
+  "name": "@liam-hq/prompts",
+  "private": true,
+  "version": "0.0.0",
+  "devDependencies": {
+    "@biomejs/biome": "1.9.3",
+    "@langchain/google-vertexai": "0.2.1",
+    "@liam-hq/configs": "workspace:*",
+    "google-auth-library": "9.15.1",
+    "typescript": "5",
+    "vitest": "2.1.9"
+  },
+  "scripts": {
+    "fmt": "pnpm run '/^fmt:.*/'",
+    "fmt:biome": "biome check --write --unsafe .",
+    "lint": "pnpm run '/^lint:.*/'",
+    "lint:biome": "biome check .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.23.0"
+  }
+}
