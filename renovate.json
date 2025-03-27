@@ -4,5 +4,9 @@
     "config:recommended",
     ":dependencyDashboard",
     "helpers:pinGitHubActionDigests"
-  ]
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  }
 }
