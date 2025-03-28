@@ -464,7 +464,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_project_with_repository: {
+        Args: {
+          project_id: number
+        }
+        Returns: Json
+      }
     }
     Enums: {
       KnowledgeType: 'SCHEMA' | 'DOCS'

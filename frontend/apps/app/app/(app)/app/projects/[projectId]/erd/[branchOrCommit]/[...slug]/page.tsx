@@ -87,19 +87,11 @@ export default async function Page({
 
   try {
     const supabase = await createClient()
+
     const { data: project } = await supabase
-      .from('Project')
-      .select(`
-        *,
-        ProjectRepositoryMapping:ProjectRepositoryMapping(
-          *,
-          Repository:Repository(
-            name, owner, installationId
-          )
-        )
-      `)
-      .eq('id', Number(projectId))
-      .single()
+      .rpc('get_project_with_repository', {
+        project_id: Number(projectId)
+      })
 
     const repository = project?.ProjectRepositoryMapping[0].Repository
     if (!repository?.installationId || !repository.owner || !repository.name) {

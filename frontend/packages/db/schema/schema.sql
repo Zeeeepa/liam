@@ -40,6 +40,50 @@ CREATE TYPE public."KnowledgeType" AS ENUM (
 );
 
 
+--
+-- Name: get_project_with_repository(bigint); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.get_project_with_repository(project_id bigint) RETURNS json
+    LANGUAGE plpgsql SECURITY DEFINER
+    AS $$
+begin
+  return (
+    select json_build_object(
+      'id', p.id,
+      'name', p.name,
+      'created_at', p.created_at,
+      'updated_at', p.updated_at,
+      'ProjectRepositoryMapping', (
+        select json_agg(
+          json_build_object(
+            'id', prm.id,
+            'project_id', prm.project_id,
+            'repository_id', prm.repository_id,
+            'created_at', prm.created_at,
+            'updated_at', prm.updated_at,
+            'Repository', (
+              select json_build_object(
+                'name', r.name,
+                'owner', r.owner,
+                'installation_id', r.installation_id
+              )
+              from "Repository" r
+              where r.id = prm.repository_id
+            )
+          )
+        )
+        from "ProjectRepositoryMapping" prm
+        where prm.project_id = p.id
+      )
+    )
+    from "Project" p
+    where p.id = project_id
+  );
+end;
+$$;
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -737,6 +781,15 @@ GRANT USAGE ON SCHEMA public TO postgres;
 GRANT USAGE ON SCHEMA public TO anon;
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT USAGE ON SCHEMA public TO service_role;
+
+
+--
+-- Name: FUNCTION get_project_with_repository(project_id bigint); Type: ACL; Schema: public; Owner: -
+--
+
+GRANT ALL ON FUNCTION public.get_project_with_repository(project_id bigint) TO anon;
+GRANT ALL ON FUNCTION public.get_project_with_repository(project_id bigint) TO authenticated;
+GRANT ALL ON FUNCTION public.get_project_with_repository(project_id bigint) TO service_role;
 
 
 --
