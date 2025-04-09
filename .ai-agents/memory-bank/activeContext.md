@@ -24,6 +24,15 @@ The current focus is on enhancing the Reviewer User experience with AI-driven an
    - Modified the KnowledgeSuggestionDetailPage.tsx component to display the reasoning field when available
    - This enhancement helps users understand the context and rationale behind schema metadata update suggestions, enabling more informed decisions when approving suggestions
 
+2. **OverallReview to KnowledgeSuggestion Relationship**: Implemented a relationship between OverallReview and KnowledgeSuggestion tables:
+   - Created a new intermediate table `OverallReviewKnowledgeSuggestionMapping` to link OverallReview and KnowledgeSuggestion
+   - Modified `processCreateKnowledgeSuggestion.ts` to accept an optional `overallReviewId` parameter
+   - Implemented `createOverallReviewMapping` function to create mappings in the OverallReviewKnowledgeSuggestionMapping table
+   - Enhanced the MigrationDetailPage to fetch and display related KnowledgeSuggestions
+   - Updated UI to show KnowledgeSuggestions in a dedicated section on the MigrationDetailPage
+   - Implemented proper navigation using the urlgen utility for type-safe route generation
+   - This allows users to track and navigate to KnowledgeSuggestions from the MigrationDetailPage
+
 2. **Optimized KnowledgeSuggestion Creation**: Enhanced the `processCreateKnowledgeSuggestion.ts` function to avoid creating unnecessary suggestions:
    - Implemented content comparison to check if document content has changed before creating a suggestion
    - Refactored the function into smaller, focused helper functions to reduce cognitive complexity
@@ -149,7 +158,14 @@ The current focus is on enhancing the Reviewer User experience with AI-driven an
    - Align data fetching with component roles
    - Break down complex functions into smaller, focused helper functions
 
-2. **Deployment Process**:
+2. **Code Quality Process**:
+   - Use `pnpm fmt` to format code according to project standards
+   - Use `pnpm lint` to check for code quality issues and type errors
+   - Run these commands before committing changes to ensure consistent code quality
+   - The formatter uses Biome for JavaScript/TypeScript formatting
+   - The linter checks both code style (using Biome) and type correctness (using TypeScript)
+
+3. **Deployment Process**:
    - Use trigger.dev CLI for deploying background jobs
    - Run `npx trigger.dev deploy --dry-run` to verify deployment without applying changes
    - Run `npx trigger.dev deploy` to deploy to production

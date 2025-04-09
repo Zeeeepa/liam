@@ -240,6 +240,7 @@ export const generateSchemaMetaSuggestionTask = task({
         branch: result.branchName,
         traceId: result.traceId,
         reasoning: result.reasoning || '',
+        overallReviewId: result.overallReviewId,
       })
       logger.info('Knowledge suggestion creation triggered')
     } else {
@@ -263,6 +264,7 @@ export const createKnowledgeSuggestionTask = task({
     branch: string
     traceId?: string
     reasoning: string
+    overallReviewId?: number
   }) => {
     logger.log('Executing create knowledge suggestion task:', { payload })
     try {

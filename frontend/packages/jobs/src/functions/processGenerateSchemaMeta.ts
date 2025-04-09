@@ -110,6 +110,7 @@ export const processGenerateSchemaMeta = async (
       title: `Schema meta update from PR #${Number(pullRequest.pullNumber)}`,
       traceId: predefinedRunId,
       reasoning: schemaMetaResult.reasoning,
+      overallReviewId: payload.overallReviewId,
     }
   } catch (error) {
     console.error('Error generating schema meta:', error)

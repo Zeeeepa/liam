@@ -111,6 +111,7 @@ async function getMigrationContents(migrationId: string) {
         reviewScores: [],
       },
       erdLinks: [],
+      knowledgeSuggestions: [],
     }
   }
 
@@ -125,6 +126,7 @@ async function getMigrationContents(migrationId: string) {
       migration,
       overallReview,
       erdLinks: [],
+      knowledgeSuggestions: [],
     }
   }
 
@@ -146,10 +148,39 @@ async function getMigrationContents(migrationId: string) {
     filename,
   }))
 
+  // Fetch related KnowledgeSuggestions through the mapping table
+  const { data: knowledgeSuggestions = [] } = await supabase
+    .from('OverallReviewKnowledgeSuggestionMapping')
+    .select(`
+      knowledgeSuggestionId,
+      knowledgeSuggestion:knowledgeSuggestionId (
+        id,
+        type,
+        title,
+        path,
+        content,
+        projectId,
+        branchName,
+        createdAt,
+        updatedAt,
+        approvedAt,
+        fileSha,
+        traceId
+      )
+    `)
+    .eq('overallReviewId', overallReview.id)
+    .order('createdAt', { ascending: false })
+
+  // Map the result to extract the knowledgeSuggestion property from each item
+  const mappedKnowledgeSuggestions = (knowledgeSuggestions || [])
+    .map((item) => item.knowledgeSuggestion)
+    .filter((suggestion) => !!suggestion)
+
   return {
     migration,
     overallReview,
     erdLinks,
+    knowledgeSuggestions: mappedKnowledgeSuggestions,
   }
 }
 
@@ -158,8 +189,12 @@ export const MigrationDetailPage: FC<Props> = async ({
   projectId,
   branchOrCommit,
 }) => {
-  const { migration, overallReview, erdLinks } =
-    await getMigrationContents(migrationId)
+  const {
+    migration,
+    overallReview,
+    erdLinks,
+    knowledgeSuggestions = [],
+  } = await getMigrationContents(migrationId)
 
   const formattedReviewDate = overallReview.reviewedAt
     ? new Date(overallReview.reviewedAt).toLocaleDateString('en-US')
@@ -331,6 +366,51 @@ export const MigrationDetailPage: FC<Props> = async ({
                 )
             ) : (
               <p className={styles.noIssues}>No review issues found.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Knowledge Suggestions Section */}
+        <div className={styles.box}>
+          <h2 className={styles.h2}>Knowledge Suggestions</h2>
+          <div className={styles.knowledgeSuggestions}>
+            {knowledgeSuggestions.length > 0 ? (
+              <div className={styles.suggestionList}>
+                {knowledgeSuggestions.map((suggestion) => (
+                  <div key={suggestion.id} className={styles.suggestionItem}>
+                    <div className={styles.suggestionHeader}>
+                      <span className={styles.suggestionType}>
+                        {suggestion.type}
+                      </span>
+                      <span className={styles.suggestionTitle}>
+                        {suggestion.title}
+                      </span>
+                      <span className={styles.suggestionPath}>
+                        {suggestion.path}
+                      </span>
+                    </div>
+                    <div className={styles.suggestionActions}>
+                      <Link
+                        href={urlgen(
+                          'projects/[projectId]/ref/[branchOrCommit]/knowledge-suggestions/[id]',
+                          {
+                            projectId: `${projectId}`,
+                            branchOrCommit: suggestion.branchName || 'main',
+                            id: `${suggestion.id}`,
+                          },
+                        )}
+                        className={styles.viewButton}
+                      >
+                        View Details →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noSuggestions}>
+                No knowledge suggestions found.
+              </p>
             )}
           </div>
         </div>

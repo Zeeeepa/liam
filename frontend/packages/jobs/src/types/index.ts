@@ -68,6 +68,7 @@ export type SchemaMetaResult =
       branchName: string
       title: string
       traceId: string
+      overallReviewId: number
       reasoning?: string
     }
   | {
