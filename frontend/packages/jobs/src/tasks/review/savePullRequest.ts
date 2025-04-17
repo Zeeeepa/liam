@@ -79,7 +79,9 @@ async function getRepositoryFromProjectId(
     .maybeSingle()
 
   if (mappingError || !projectMapping) {
-    throw new Error(`No repository found for project ID: ${projectId}`)
+    throw new Error(
+      `No repository found for project ID: ${projectId}, error: ${JSON.stringify(mappingError)}`,
+    )
   }
 
   return projectMapping.repositories
