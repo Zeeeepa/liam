@@ -153,8 +153,8 @@ CREATE TABLE IF NOT EXISTS "public"."github_doc_file_paths" (
     "path" "text" NOT NULL,
     "is_review_enabled" boolean DEFAULT true NOT NULL,
     "project_id" uuid NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -172,8 +172,8 @@ CREATE TABLE IF NOT EXISTS "public"."github_schema_file_paths" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "path" "text" NOT NULL,
     "project_id" uuid NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL,
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL,
     "format" "public"."schema_format_enum" NOT NULL
 );
 
@@ -196,9 +196,9 @@ CREATE TABLE IF NOT EXISTS "public"."knowledge_suggestions" (
     "content" "text" NOT NULL,
     "file_sha" "text",
     "project_id" uuid NOT NULL,
-    "approved_at" timestamp(3) without time zone,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL,
+    "approved_at" timestamp(3) with time zone,
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL,
     "branch_name" "text" NOT NULL,
     "trace_id" "text",
     "reasoning" "text" DEFAULT ''::"text"
@@ -212,8 +212,8 @@ CREATE TABLE IF NOT EXISTS "public"."knowledge_suggestion_doc_mappings" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "knowledge_suggestion_id" uuid NOT NULL,
     "github_doc_file_path_id" uuid NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -250,8 +250,8 @@ CREATE TABLE IF NOT EXISTS "public"."migrations" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "title" "text" NOT NULL,
     "pull_request_id" uuid NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -292,9 +292,9 @@ CREATE TABLE IF NOT EXISTS "public"."overall_reviews" (
     "project_id" uuid,
     "pull_request_id" uuid NOT NULL,
     "review_comment" "text",
-    "reviewed_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL,
+    "reviewed_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL,
     "branch_name" "text" NOT NULL,
     "trace_id" "text"
 );
@@ -307,8 +307,8 @@ CREATE TABLE IF NOT EXISTS "public"."overall_review_knowledge_suggestion_mapping
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "overall_review_id" uuid NOT NULL,
     "knowledge_suggestion_id" uuid NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -332,8 +332,8 @@ ALTER TABLE "public"."overall_review_knowledge_suggestion_mappings" OWNER TO "po
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "name" "text" NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL,
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL,
     "organization_id" uuid );
 
 
@@ -344,8 +344,8 @@ CREATE TABLE IF NOT EXISTS "public"."project_repository_mappings" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "project_id" uuid NOT NULL,
     "repository_id" uuid NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -370,8 +370,8 @@ CREATE TABLE IF NOT EXISTS "public"."pull_requests" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "pull_number" bigint NOT NULL,
     "comment_id" bigint,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL,
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL,
     "repository_id" uuid NOT NULL
 );
 
@@ -392,8 +392,8 @@ CREATE TABLE IF NOT EXISTS "public"."repositories" (
     "owner" "text" NOT NULL,
     "installation_id" integer NOT NULL,
     "is_active" boolean DEFAULT true NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -413,10 +413,10 @@ CREATE TABLE IF NOT EXISTS "public"."review_feedbacks" (
     "category" "public"."category_enum" NOT NULL,
     "severity" "public"."severity_enum" NOT NULL,
     "description" "text" NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL,
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL,
     "suggestion" "text" NOT NULL,
-    "resolved_at" timestamp(3) without time zone,
+    "resolved_at" timestamp(3) with time zone,
     "resolution_comment" "text"
 );
 
@@ -433,8 +433,8 @@ CREATE TABLE IF NOT EXISTS "public"."review_feedback_comments" (
     "review_feedback_id" uuid NOT NULL,
     "user_id" "uuid" NOT NULL,
     "content" "text" NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
@@ -457,8 +457,8 @@ CREATE TABLE IF NOT EXISTS "public"."review_suggestion_snippets" (
     "review_feedback_id" uuid NOT NULL,
     "filename" "text" NOT NULL,
     "snippet" "text" NOT NULL,
-    "created_at" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp(3) without time zone NOT NULL
+    "created_at" timestamp(3) with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" timestamp(3) with time zone NOT NULL
 );
 
 
