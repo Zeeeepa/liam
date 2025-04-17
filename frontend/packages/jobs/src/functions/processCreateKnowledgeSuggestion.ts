@@ -72,7 +72,7 @@ const hasContentChanged = async (
   const { data: docFilePath } = await supabase
     .from('github_doc_file_paths')
     .select('id')
-    .eq('projectId', projectId)
+    .eq('project_id', projectId)
     .eq('path', path)
     .maybeSingle()
 

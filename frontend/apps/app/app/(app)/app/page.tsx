@@ -13,7 +13,7 @@ export default async function Page() {
   const { data: organizationMembers, error: orgError } = await supabase
     .from('organization_members')
     .select('organization_id')
-    .eq('userId', data.user.id)
+    .eq('user_id', data.user.id)
     .limit(1)
 
   if (orgError) {
@@ -29,7 +29,7 @@ export default async function Page() {
   const { data: projects, error: projectsError } = await supabase
     .from('projects')
     .select('id')
-    .eq('organizationId', organizationId)
+    .eq('organization_id', organizationId)
     .limit(1)
 
   if (projectsError) {
