@@ -4,9 +4,9 @@ import { buildAgentPrompt } from './prompts'
 
 export class DatabaseSchemaBuildAgent extends BaseGeminiAgent {
   constructor() {
-    // Configure Gemini 2.0 Flash for database schema building with precision
+    // Configure Gemini 2.5 Pro for database schema building with precision
     super({
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-2.5-pro',
       temperature: 0.1, // Low temperature for precise schema generation
       maxOutputTokens: 8192,
     })

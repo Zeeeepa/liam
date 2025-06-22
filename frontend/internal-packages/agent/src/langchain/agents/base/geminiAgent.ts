@@ -29,7 +29,7 @@ export abstract class BaseGeminiAgent implements ChatAgent {
     }
 
     this.model = new ChatGoogleGenerativeAI({
-      model: options?.model || 'gemini-2.0-flash-exp',
+      model: options?.model || 'gemini-2.5-pro',
       apiKey: process.env.GOOGLE_API_KEY,
       temperature: options?.temperature ?? 0.1,
       maxOutputTokens: options?.maxOutputTokens ?? 8192,
