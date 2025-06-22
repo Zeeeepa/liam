@@ -384,7 +384,25 @@ install_dependencies() {
     
     log_step "Installing Supabase CLI..."
     if ! command -v supabase &> /dev/null; then
-        npm install -g supabase
+        # Use the recommended installation method for Supabase CLI
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            if command -v brew &> /dev/null; then
+                brew install supabase/tap/supabase
+            else
+                log_warning "Homebrew not found. Installing via npm (may have issues)..."
+                npm install -g supabase || log_warning "Supabase CLI installation failed, but continuing..."
+            fi
+        else
+            # Linux - use the official install script
+            log_info "Installing Supabase CLI via official installer..."
+            curl -fsSL https://supabase.com/install.sh | sh
+            # Add to PATH if not already there
+            if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+                export PATH="$HOME/.local/bin:$PATH"
+                echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+            fi
+        fi
     fi
     
     log_step "Installing Trigger.dev CLI..."
@@ -398,6 +416,26 @@ install_dependencies() {
 # Setup Supabase database
 setup_database() {
     log_header "Setting Up Supabase Database"
+    
+    # Check if supabase command is available
+    if ! command -v supabase &> /dev/null; then
+        log_error "Supabase CLI not found. Attempting to install..."
+        
+        # Try alternative installation methods
+        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            log_step "Trying alternative Supabase installation..."
+            # Try using the project's local supabase if available
+            if [[ -f "node_modules/.bin/supabase" ]]; then
+                log_info "Using local Supabase CLI from node_modules"
+                export PATH="$(pwd)/node_modules/.bin:$PATH"
+            else
+                log_warning "Supabase CLI installation failed. You may need to install it manually."
+                log_info "Please visit: https://supabase.com/docs/guides/cli/getting-started"
+                log_info "Continuing with setup, but database features may not work..."
+                return 0
+            fi
+        fi
+    fi
     
     cd "$SUPABASE_DIR"
     
