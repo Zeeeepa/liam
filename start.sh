@@ -385,23 +385,32 @@ install_dependencies() {
     log_step "Installing Supabase CLI..."
     if ! command -v supabase &> /dev/null; then
         # Use the recommended installation method for Supabase CLI
+        # Note: The old install.sh script (https://supabase.com/install.sh) is deprecated as of 2024
+        # Official method is now npm: https://supabase.com/docs/guides/cli/getting-started
         if [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
             if command -v brew &> /dev/null; then
+                log_info "Installing Supabase CLI via Homebrew..."
                 brew install supabase/tap/supabase
             else
-                log_warning "Homebrew not found. Installing via npm (may have issues)..."
-                npm install -g supabase || log_warning "Supabase CLI installation failed, but continuing..."
+                log_warning "Homebrew not found. Installing via npm..."
+                npm install -g supabase || {
+                    log_warning "Global npm installation failed. Trying local installation..."
+                    npm install supabase --save-dev || log_warning "Supabase CLI installation failed, but continuing..."
+                }
             fi
         else
-            # Linux - use the official install script
-            log_info "Installing Supabase CLI via official installer..."
-            curl -fsSL https://supabase.com/install.sh | sh
-            # Add to PATH if not already there
-            if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-                export PATH="$HOME/.local/bin:$PATH"
-                echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-            fi
+            # Linux - use npm installation (official method as of 2024)
+            log_info "Installing Supabase CLI via npm (official method)..."
+            npm install -g supabase || {
+                log_warning "Global npm installation failed. Trying local installation..."
+                # Try local installation as fallback
+                npm install supabase --save-dev || {
+                    log_error "Supabase CLI installation failed completely"
+                    log_info "You may need to install it manually: npm install -g supabase"
+                    log_info "Or visit: https://supabase.com/docs/guides/cli/getting-started"
+                }
+            }
         fi
     fi
     
@@ -422,18 +431,33 @@ setup_database() {
         log_error "Supabase CLI not found. Attempting to install..."
         
         # Try alternative installation methods
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            log_step "Trying alternative Supabase installation..."
-            # Try using the project's local supabase if available
-            if [[ -f "node_modules/.bin/supabase" ]]; then
-                log_info "Using local Supabase CLI from node_modules"
-                export PATH="$(pwd)/node_modules/.bin:$PATH"
-            else
-                log_warning "Supabase CLI installation failed. You may need to install it manually."
-                log_info "Please visit: https://supabase.com/docs/guides/cli/getting-started"
-                log_info "Continuing with setup, but database features may not work..."
-                return 0
-            fi
+        log_step "Trying alternative Supabase installation methods..."
+        
+        # Method 1: Try global npm installation
+        if npm install -g supabase 2>/dev/null; then
+            log_success "Supabase CLI installed globally via npm"
+        # Method 2: Try local installation in current project
+        elif npm install supabase --save-dev 2>/dev/null; then
+            log_success "Supabase CLI installed locally via npm"
+            # Add local node_modules/.bin to PATH
+            export PATH="$(pwd)/node_modules/.bin:$PATH"
+        # Method 3: Check if already available in node_modules
+        elif [[ -f "node_modules/.bin/supabase" ]]; then
+            log_info "Using existing local Supabase CLI from node_modules"
+            export PATH="$(pwd)/node_modules/.bin:$PATH"
+        # Method 4: Try using npx as fallback
+        elif command -v npx &> /dev/null && npx supabase --version &> /dev/null; then
+            log_info "Using Supabase CLI via npx"
+            # Create a wrapper function for supabase command
+            supabase() { npx supabase "$@"; }
+            export -f supabase
+        else
+            log_warning "All Supabase CLI installation methods failed."
+            log_info "Manual installation required:"
+            log_info "  • npm install -g supabase"
+            log_info "  • Or visit: https://supabase.com/docs/guides/cli/getting-started"
+            log_info "Continuing with setup, but database features may not work..."
+            return 0
         fi
     fi
     
