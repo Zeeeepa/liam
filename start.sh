@@ -52,6 +52,22 @@ log_header() {
     echo -e "${NC}"
 }
 
+# Progress indicator for long-running operations
+show_progress() {
+    local pid=$1
+    local message=$2
+    local delay=0.5
+    local spinstr='|/-\'
+    
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf "\r${BLUE}%s %c${NC}" "$message" "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+    done
+    printf "\r%*s\r" ${#message} " "  # Clear the line
+}
+
 # Cleanup function for graceful shutdown
 cleanup() {
     log_warning "Shutting down services..."
@@ -394,13 +410,25 @@ install_dependencies() {
                 brew install supabase/tap/supabase
             else
                 log_warning "Homebrew not found. Checking npx availability..."
-                if command -v npx &> /dev/null && npx supabase --version &> /dev/null; then
-                    log_success "Supabase CLI available via npx (recommended method)"
-                    # Create a wrapper function for supabase command
-                    supabase() { npx supabase "$@"; }
-                    export -f supabase
+                if command -v npx &> /dev/null; then
+                    log_info "npx is available, testing Supabase CLI download (max 90 seconds)..."
+                    log_info "💡 Tip: This downloads Supabase CLI on first use - please be patient"
+                    
+                    # Use timeout to prevent hanging - give it 90 seconds max
+                    if timeout 90 npx supabase --version &> /dev/null; then
+                        log_success "Supabase CLI available via npx (recommended method)"
+                        # Create a wrapper function for supabase command
+                        supabase() { npx supabase "$@"; }
+                        export -f supabase
+                    else
+                        log_warning "npx supabase download timed out or failed after 90 seconds"
+                        log_info "This can happen with slow internet connections"
+                        log_info "Falling back to local npm installation..."
+                        # Note: Global installation is NOT supported by Supabase CLI
+                        npm install supabase --save-dev || log_warning "Supabase CLI installation failed, but continuing..."
+                    fi
                 else
-                    log_info "Installing via npm locally..."
+                    log_info "npx not available, installing via npm locally..."
                     # Note: Global installation is NOT supported by Supabase CLI
                     npm install supabase --save-dev || log_warning "Supabase CLI installation failed, but continuing..."
                 fi
@@ -408,16 +436,34 @@ install_dependencies() {
         else
             # Linux - try npx first (recommended method), then local npm installation
             log_info "Checking Supabase CLI availability..."
-            if command -v npx &> /dev/null && npx supabase --version &> /dev/null; then
-                log_success "Supabase CLI available via npx (recommended method)"
-                # Create a wrapper function for supabase command
-                supabase() { npx supabase "$@"; }
-                export -f supabase
+            
+            # Check if npx is available first (quick check)
+            if command -v npx &> /dev/null; then
+                log_info "npx is available, testing Supabase CLI download (max 90 seconds)..."
+                log_info "💡 Tip: This downloads Supabase CLI on first use - please be patient"
+                
+                # Use timeout to prevent hanging - give it 90 seconds max
+                if timeout 90 npx supabase --version &> /dev/null; then
+                    log_success "Supabase CLI available via npx (recommended method)"
+                    # Create a wrapper function for supabase command
+                    supabase() { npx supabase "$@"; }
+                    export -f supabase
+                else
+                    log_warning "npx supabase download timed out or failed after 90 seconds"
+                    log_info "This can happen with slow internet connections"
+                    log_info "Falling back to local npm installation..."
+                    npm install supabase --save-dev || {
+                        log_warning "Supabase CLI local installation failed (npm dependency resolution issue)"
+                        log_info "This is a known npm issue. You can try manually:"
+                        log_info "  • npx supabase --version (wait for download to complete)"
+                        log_info "  • Visit: https://supabase.com/docs/guides/cli/getting-started"
+                    }
+                fi
             else
-                log_info "Installing Supabase CLI locally via npm..."
+                log_info "npx not available, installing Supabase CLI locally via npm..."
                 npm install supabase --save-dev || {
                     log_warning "Supabase CLI local installation failed (npm dependency resolution issue)"
-                    log_info "This is a known npm issue, but npx should still work"
+                    log_info "This is a known npm issue"
                     log_info "Visit: https://supabase.com/docs/guides/cli/getting-started"
                 }
             fi
@@ -444,11 +490,18 @@ setup_database() {
         log_step "Trying alternative Supabase installation methods..."
         
         # Method 1: Try using npx (official recommended method)
-        if command -v npx &> /dev/null && npx supabase --version &> /dev/null; then
-            log_success "Supabase CLI available via npx (recommended method)"
-            # Create a wrapper function for supabase command
-            supabase() { npx supabase "$@"; }
-            export -f supabase
+        if command -v npx &> /dev/null; then
+            log_info "Trying npx method with timeout (max 90 seconds)..."
+            if timeout 90 npx supabase --version &> /dev/null; then
+                log_success "Supabase CLI available via npx (recommended method)"
+                # Create a wrapper function for supabase command
+                supabase() { npx supabase "$@"; }
+                export -f supabase
+            else
+                log_warning "npx supabase timed out, trying other methods..."
+                # Continue to next method
+                false
+            fi
         # Method 2: Check if already available in node_modules
         elif [[ -f "node_modules/.bin/supabase" ]]; then
             log_info "Using existing local Supabase CLI from node_modules"
