@@ -1,21 +1,21 @@
-import { ChatOpenAI } from '@langchain/openai'
-import { createLangfuseHandler } from '../../utils/telemetry'
-import type { BasePromptVariables, ChatAgent } from '../../utils/types'
+import { BaseGeminiAgent } from '../base/geminiAgent'
+import type { BasePromptVariables } from '../../utils/types'
 import { buildAgentPrompt } from './prompts'
 
-export class DatabaseSchemaBuildAgent implements ChatAgent {
-  private model: ChatOpenAI
-
+export class DatabaseSchemaBuildAgent extends BaseGeminiAgent {
   constructor() {
-    this.model = new ChatOpenAI({
-      model: 'o3',
-      callbacks: [createLangfuseHandler()],
+    // Configure Gemini 2.5 Pro for database schema building with precision
+    super({
+      model: 'gemini-2.5-pro',
+      temperature: 0.1, // Low temperature for precise schema generation
+      maxOutputTokens: 8192,
     })
   }
 
   async generate(variables: BasePromptVariables): Promise<string> {
     const formattedPrompt = await buildAgentPrompt.format(variables)
-    const response = await this.model.invoke(formattedPrompt)
-    return response.content as string
+    const validatedPrompt = this.validateAndFormatPrompt(formattedPrompt)
+    
+    return this.invokeModel(validatedPrompt)
   }
 }
