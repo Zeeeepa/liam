@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "main": "src/index.ts",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@langchain/community": "0.3.45",
     "@langchain/core": "0.3.61",
     "@langchain/google-genai": "^0.2.13",
