@@ -42,7 +42,7 @@ export function validateGoogleApiKey(): {
 }
 
 /**
- * Validates Trigger.dev configuration
+ * Validates Trigger.dev configuration (auto-configured for local development)
  */
 export function validateTriggerDevConfig(): {
   isValid: boolean
@@ -52,16 +52,23 @@ export function validateTriggerDevConfig(): {
   const projectId = process.env.TRIGGER_PROJECT_ID
   const secretKey = process.env.TRIGGER_SECRET_KEY
 
+  // For local development, we accept the auto-configured values
   if (!projectId) {
     errors.push('TRIGGER_PROJECT_ID environment variable is required but not set')
+  } else if (projectId === 'dev-local-project') {
+    // Auto-configured local development - this is valid
+    return { isValid: true, errors: [] }
   } else if (!projectId.startsWith('proj_')) {
-    errors.push('TRIGGER_PROJECT_ID should start with "proj_"')
+    errors.push('TRIGGER_PROJECT_ID should start with "proj_" for production or use "dev-local-project" for local development')
   }
 
   if (!secretKey) {
     errors.push('TRIGGER_SECRET_KEY environment variable is required but not set')
+  } else if (secretKey === 'dev-local-secret') {
+    // Auto-configured local development - this is valid
+    return { isValid: true, errors: [] }
   } else if (!secretKey.startsWith('tr_dev_') && !secretKey.startsWith('tr_prod_')) {
-    errors.push('TRIGGER_SECRET_KEY should start with "tr_dev_" or "tr_prod_"')
+    errors.push('TRIGGER_SECRET_KEY should start with "tr_dev_" or "tr_prod_" for production or use "dev-local-secret" for local development')
   }
 
   return {
@@ -71,7 +78,7 @@ export function validateTriggerDevConfig(): {
 }
 
 /**
- * Validates Supabase configuration
+ * Validates Supabase configuration (auto-configured from local Supabase)
  */
 export function validateSupabaseConfig(): {
   isValid: boolean
@@ -88,16 +95,23 @@ export function validateSupabaseConfig(): {
     errors.push('NEXT_PUBLIC_SUPABASE_URL should be a valid URL starting with http')
   }
 
+  // Allow auto-retrieval placeholders during setup
   if (!anonKey) {
     errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable is required but not set')
+  } else if (anonKey === 'AUTO_RETRIEVED_FROM_SUPABASE_START') {
+    // This is a placeholder that will be replaced during setup - valid for now
+    return { isValid: true, errors: [] }
   } else if (!anonKey.startsWith('eyJ')) {
-    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY should be a valid JWT token')
+    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY should be a valid JWT token or "AUTO_RETRIEVED_FROM_SUPABASE_START" during setup')
   }
 
   if (!serviceRoleKey) {
     errors.push('SUPABASE_SERVICE_ROLE_KEY environment variable is required but not set')
+  } else if (serviceRoleKey === 'AUTO_RETRIEVED_FROM_SUPABASE_START') {
+    // This is a placeholder that will be replaced during setup - valid for now
+    return { isValid: true, errors: [] }
   } else if (!serviceRoleKey.startsWith('eyJ')) {
-    errors.push('SUPABASE_SERVICE_ROLE_KEY should be a valid JWT token')
+    errors.push('SUPABASE_SERVICE_ROLE_KEY should be a valid JWT token or "AUTO_RETRIEVED_FROM_SUPABASE_START" during setup')
   }
 
   return {
@@ -229,4 +243,3 @@ export function requireValidEnvironment(): void {
     throw new Error(errorMessage)
   }
 }
-

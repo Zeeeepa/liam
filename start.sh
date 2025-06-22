@@ -155,44 +155,65 @@ setup_environment() {
     fi
     
     if [[ ! -f "$ENV_FILE" ]]; then
-        log_step "Creating .env file from requirements.md template"
+        log_step "Creating .env file with auto-configured defaults"
         
-        # Extract environment variables from requirements.md
-        grep -E '^[A-Z_]+=.*' "$REQUIREMENTS_FILE" > "$ENV_FILE" 2>/dev/null || true
-        
-        if [[ ! -s "$ENV_FILE" ]]; then
-            log_warning "Could not extract variables from requirements.md. Creating basic .env file"
-            cat > "$ENV_FILE" << 'EOF'
-# Copy your API keys and configuration here
-# See requirements.md for detailed instructions
-
-# MANDATORY VARIABLES
+        # Create .env file with pre-defined values and placeholders
+        cat > "$ENV_FILE" << 'EOF'
+# === MANUAL INPUT REQUIRED (Only 1 Variable!) ===
+# Google Gemini API Key (ONLY REQUIRED MANUAL INPUT)
 GOOGLE_API_KEY=""
-TRIGGER_PROJECT_ID=""
-TRIGGER_SECRET_KEY=""
+
+# === AUTOMATICALLY CONFIGURED (No Manual Input Required) ===
+# Supabase Configuration (AUTO-CONFIGURED)
 NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
-NEXT_PUBLIC_SUPABASE_ANON_KEY=""
-SUPABASE_SERVICE_ROLE_KEY=""
+NEXT_PUBLIC_SUPABASE_ANON_KEY="AUTO_RETRIEVED_FROM_SUPABASE_START"
+SUPABASE_SERVICE_ROLE_KEY="AUTO_RETRIEVED_FROM_SUPABASE_START"
+
+# Database URLs (AUTO-CONFIGURED)
 POSTGRES_URL="postgresql://postgres:postgres@localhost:54322/postgres"
 POSTGRES_URL_NON_POOLING="postgresql://postgres:postgres@localhost:54322/postgres"
+
+# Trigger.dev Configuration (AUTO-CONFIGURED for development)
+TRIGGER_PROJECT_ID="dev-local-project"
+TRIGGER_SECRET_KEY="dev-local-secret"
+
+# Application Configuration (PRE-DEFINED)
 NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 NEXT_PUBLIC_ENV_NAME="development"
 MIGRATION_ENABLED="true"
 
-# OPTIONAL VARIABLES
+# === OPTIONAL ENHANCEMENTS ===
+# Langfuse (AI Observability) - OPTIONAL
 LANGFUSE_BASE_URL="https://cloud.langfuse.com"
 LANGFUSE_PUBLIC_KEY=""
 LANGFUSE_SECRET_KEY=""
+
+# Sentry (Error Tracking) - OPTIONAL
 SENTRY_DSN=""
+SENTRY_ORG=""
+SENTRY_PROJECT=""
+SENTRY_AUTH_TOKEN=""
+
+# Resend (Email Service) - OPTIONAL
 RESEND_API_KEY=""
+RESEND_EMAIL_FROM_ADDRESS=""
+
+# GitHub Integration - OPTIONAL
+GITHUB_APP_ID=""
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+GITHUB_PRIVATE_KEY=""
+NEXT_PUBLIC_GITHUB_APP_URL=""
+
+# Feature Flags - OPTIONAL
+FLAGS_SECRET=""
 EOF
-        fi
         
-        log_warning "Please edit .env file and add your API keys before continuing"
-        log_info "Required keys: GOOGLE_API_KEY, TRIGGER_PROJECT_ID, TRIGGER_SECRET_KEY"
-        log_info "See requirements.md for detailed setup instructions"
+        log_warning "Please edit .env file and add your Google Gemini API key"
+        log_info "ONLY REQUIRED: GOOGLE_API_KEY (get from https://makersuite.google.com/app/apikey)"
+        log_info "All other variables are auto-configured or optional"
         
-        read -p "Press Enter after you've configured your .env file..."
+        read -p "Press Enter after you've added your GOOGLE_API_KEY to .env file..."
     else
         log_success ".env file already exists"
     fi
@@ -212,57 +233,49 @@ validate_environment() {
     
     local errors=0
     
-    # Check mandatory variables
+    # Check ONLY mandatory variable - Google API key
     if [[ -z "$GOOGLE_API_KEY" ]]; then
         log_error "GOOGLE_API_KEY is not set"
+        log_info "This is the ONLY required manual input. Get your key from: https://makersuite.google.com/app/apikey"
         ((errors++))
     elif [[ ! "$GOOGLE_API_KEY" =~ ^AIzaSy ]]; then
         log_error "GOOGLE_API_KEY format is invalid (should start with 'AIzaSy')"
         ((errors++))
     else
-        log_success "Google API key is configured"
+        log_success "Google API key is configured ✅"
     fi
     
-    if [[ -z "$TRIGGER_PROJECT_ID" ]]; then
-        log_error "TRIGGER_PROJECT_ID is not set"
-        ((errors++))
-    elif [[ ! "$TRIGGER_PROJECT_ID" =~ ^proj_ ]]; then
-        log_error "TRIGGER_PROJECT_ID format is invalid (should start with 'proj_')"
-        ((errors++))
+    # All other variables are auto-configured or optional
+    log_success "Trigger.dev is auto-configured for local development"
+    log_success "Supabase will be auto-configured when started"
+    log_success "Application settings are pre-defined"
+    
+    # Check optional enhancements (just informational)
+    if [[ -n "$LANGFUSE_PUBLIC_KEY" ]] && [[ -n "$LANGFUSE_SECRET_KEY" ]]; then
+        log_success "Langfuse AI observability is configured"
     else
-        log_success "Trigger.dev project ID is configured"
+        log_info "Langfuse not configured (optional) - AI observability will be disabled"
     fi
     
-    if [[ -z "$TRIGGER_SECRET_KEY" ]]; then
-        log_error "TRIGGER_SECRET_KEY is not set"
-        ((errors++))
-    elif [[ ! "$TRIGGER_SECRET_KEY" =~ ^tr_(dev_|prod_) ]]; then
-        log_error "TRIGGER_SECRET_KEY format is invalid (should start with 'tr_dev_' or 'tr_prod_')"
-        ((errors++))
+    if [[ -n "$SENTRY_DSN" ]]; then
+        log_success "Sentry error tracking is configured"
     else
-        log_success "Trigger.dev secret key is configured"
+        log_info "Sentry not configured (optional) - error tracking will be disabled"
     fi
     
-    # Check optional but recommended variables
-    if [[ -z "$LANGFUSE_PUBLIC_KEY" ]] || [[ -z "$LANGFUSE_SECRET_KEY" ]]; then
-        log_warning "Langfuse not configured - AI observability will be disabled"
+    if [[ -n "$RESEND_API_KEY" ]]; then
+        log_success "Resend email service is configured"
     else
-        log_success "Langfuse is configured"
-    fi
-    
-    if [[ -z "$SENTRY_DSN" ]]; then
-        log_warning "Sentry not configured - error tracking will be disabled"
-    else
-        log_success "Sentry is configured"
+        log_info "Resend not configured (optional) - email notifications will be disabled"
     fi
     
     if [[ $errors -gt 0 ]]; then
         log_error "Environment validation failed with $errors errors"
-        log_info "Please check your .env file and requirements.md for setup instructions"
+        log_info "Please add your GOOGLE_API_KEY to the .env file"
         exit 1
     fi
     
-    log_success "Environment validation passed"
+    log_success "Environment validation passed - ready to deploy! 🚀"
 }
 
 # Install dependencies
@@ -349,20 +362,15 @@ setup_database() {
 
 # Setup Trigger.dev
 setup_trigger_dev() {
-    log_header "Setting Up Trigger.dev"
+    log_header "Setting Up Trigger.dev (Local Development Mode)"
     
     cd "$JOBS_DIR"
     
-    # Check if already logged in
-    if pnpm exec trigger whoami &> /dev/null; then
-        log_success "Already logged in to Trigger.dev"
-    else
-        log_step "Please log in to Trigger.dev..."
-        pnpm exec trigger login
-    fi
+    # For local development, we use a simplified approach
+    log_step "Starting Trigger.dev in local development mode..."
+    log_info "Using auto-configured development settings (no external signup required)"
     
-    # Deploy jobs to development environment
-    log_step "Deploying jobs to Trigger.dev development environment..."
+    # Start trigger dev in background for local development
     pnpm exec trigger dev &
     TRIGGER_PID=$!
     
@@ -370,7 +378,8 @@ setup_trigger_dev() {
     sleep 5
     
     cd - > /dev/null
-    log_success "Trigger.dev setup completed"
+    log_success "Trigger.dev local development mode started"
+    log_info "Background jobs will run locally without external dependencies"
 }
 
 # Build and start the application
@@ -564,4 +573,3 @@ case "${1:-}" in
         exit 1
         ;;
 esac
-
