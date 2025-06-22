@@ -145,6 +145,86 @@ check_system_requirements() {
     fi
 }
 
+# Prompt for Google API key
+prompt_google_api_key() {
+    log_header "Google Gemini API Key Setup"
+    
+    echo -e "${CYAN}🤖 To use Liam PMAgent with Gemini 2.5 Pro, you need a Google API key${NC}"
+    echo -e "${BLUE}📝 Get your free API key from: https://makersuite.google.com/app/apikey${NC}"
+    echo ""
+    
+    # Check if API key is already set in environment or .env file
+    local existing_key=""
+    if [[ -f "$ENV_FILE" ]]; then
+        existing_key=$(grep "^GOOGLE_API_KEY=" "$ENV_FILE" 2>/dev/null | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+    fi
+    
+    if [[ -n "$existing_key" ]] && [[ "$existing_key" != "" ]] && [[ "$existing_key" =~ ^AIzaSy ]]; then
+        log_success "Found existing Google API key in .env file"
+        echo -e "${GREEN}✅ Using existing API key: ${existing_key:0:20}...${NC}"
+        echo ""
+        read -p "Use this existing key? (Y/n): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            existing_key=""
+        else
+            export GOOGLE_API_KEY="$existing_key"
+            return 0
+        fi
+    fi
+    
+    # Prompt for new API key
+    while true; do
+        echo -e "${YELLOW}🔑 Please paste your Google API key:${NC}"
+        read -r -p "GOOGLE_API_KEY: " google_api_key
+        
+        # Validate API key format
+        if [[ -z "$google_api_key" ]]; then
+            log_error "API key cannot be empty"
+            continue
+        elif [[ ! "$google_api_key" =~ ^AIzaSy ]]; then
+            log_error "Invalid API key format. Google API keys start with 'AIzaSy'"
+            echo -e "${BLUE}💡 Make sure you copied the complete key from https://makersuite.google.com/app/apikey${NC}"
+            continue
+        elif [[ ${#google_api_key} -lt 35 ]] || [[ ${#google_api_key} -gt 45 ]]; then
+            log_error "Invalid API key length. Google API keys are typically 39 characters long"
+            continue
+        else
+            log_success "API key format looks valid!"
+            break
+        fi
+    done
+    
+    # Export the API key for immediate use
+    export GOOGLE_API_KEY="$google_api_key"
+    
+    # Test the API key
+    log_step "Testing API key with Gemini 2.5 Pro..."
+    local test_result
+    test_result=$(curl -s -X POST \
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=$google_api_key" \
+        -H 'Content-Type: application/json' \
+        -d '{
+            "contents": [{
+                "parts": [{
+                    "text": "Respond with just: API Test Successful"
+                }]
+            }]
+        }' 2>/dev/null)
+    
+    if echo "$test_result" | grep -q "API Test Successful"; then
+        log_success "🎉 API key verified! Gemini 2.5 Pro is working perfectly"
+    elif echo "$test_result" | grep -q "error"; then
+        log_error "API key test failed. Please check your key and try again"
+        log_info "Error details: $(echo "$test_result" | grep -o '"message":"[^"]*"' | cut -d'"' -f4)"
+        exit 1
+    else
+        log_warning "API key test inconclusive, but proceeding with setup"
+    fi
+    
+    echo ""
+}
+
 # Setup environment variables
 setup_environment() {
     log_header "Setting Up Environment Variables"
@@ -154,14 +234,18 @@ setup_environment() {
         exit 1
     fi
     
+    # Always prompt for Google API key first
+    prompt_google_api_key
+    
+    # Create or update .env file
     if [[ ! -f "$ENV_FILE" ]]; then
         log_step "Creating .env file with auto-configured defaults"
         
-        # Create .env file with pre-defined values and placeholders
-        cat > "$ENV_FILE" << 'EOF'
-# === MANUAL INPUT REQUIRED (Only 1 Variable!) ===
-# Google Gemini API Key (ONLY REQUIRED MANUAL INPUT)
-GOOGLE_API_KEY=""
+        # Create .env file with the provided API key and pre-defined values
+        cat > "$ENV_FILE" << EOF
+# === GOOGLE GEMINI API CONFIGURATION ===
+# Google Gemini 2.5 Pro API Key
+GOOGLE_API_KEY="$GOOGLE_API_KEY"
 
 # === AUTOMATICALLY CONFIGURED (No Manual Input Required) ===
 # Supabase Configuration (AUTO-CONFIGURED)
@@ -209,13 +293,26 @@ NEXT_PUBLIC_GITHUB_APP_URL=""
 FLAGS_SECRET=""
 EOF
         
-        log_warning "Please edit .env file and add your Google Gemini API key"
-        log_info "ONLY REQUIRED: GOOGLE_API_KEY (get from https://makersuite.google.com/app/apikey)"
-        log_info "All other variables are auto-configured or optional"
-        
-        read -p "Press Enter after you've added your GOOGLE_API_KEY to .env file..."
+        log_success "✅ .env file created with your Google API key"
     else
-        log_success ".env file already exists"
+        # Update existing .env file with the new API key
+        log_step "Updating existing .env file with new Google API key"
+        
+        if grep -q "^GOOGLE_API_KEY=" "$ENV_FILE"; then
+            # Replace existing key
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS
+                sed -i '' "s|^GOOGLE_API_KEY=.*|GOOGLE_API_KEY=\"$GOOGLE_API_KEY\"|" "$ENV_FILE"
+            else
+                # Linux
+                sed -i "s|^GOOGLE_API_KEY=.*|GOOGLE_API_KEY=\"$GOOGLE_API_KEY\"|" "$ENV_FILE"
+            fi
+        else
+            # Add new key at the top
+            echo "GOOGLE_API_KEY=\"$GOOGLE_API_KEY\"" | cat - "$ENV_FILE" > temp && mv temp "$ENV_FILE"
+        fi
+        
+        log_success "✅ .env file updated with your Google API key"
     fi
     
     # Load environment variables
@@ -434,7 +531,12 @@ show_status() {
     echo "  1. Open http://localhost:3000"
     echo "  2. Create a new design session"
     echo "  3. Send a message: 'Create a user management system'"
-    echo "  4. Watch the PMAgent workflow execute with Gemini API!"
+    echo "  4. Watch the PMAgent workflow execute with Gemini 2.5 Pro!"
+    echo ""
+    echo "🤖 AI Model Information:"
+    echo "  • Model: Gemini 2.5 Pro (latest and most advanced)"
+    echo "  • Context Window: Up to 1 million tokens"
+    echo "  • Capabilities: Advanced reasoning, code generation, multimodal"
     echo ""
     echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"
 }
@@ -479,12 +581,22 @@ health_check() {
 # Main execution flow
 main() {
     log_header "🚀 Liam PMAgent System Setup"
-    echo "This script will set up and launch the complete Liam system with Gemini API integration"
+    echo "This script will set up and launch the complete Liam system with Gemini 2.5 Pro integration"
+    echo ""
+    echo -e "${GREEN}🎯 What this script does:${NC}"
+    echo "  1. ✅ Prompts for your Google API key (only manual input required)"
+    echo "  2. ⚙️  Auto-configures all other environment variables"
+    echo "  3. 🐳 Sets up Supabase local database"
+    echo "  4. 🔧 Configures Trigger.dev for background jobs"
+    echo "  5. 🚀 Launches the frontend application"
+    echo ""
+    echo -e "${BLUE}📝 You'll need: A Google API key from https://makersuite.google.com/app/apikey${NC}"
+    echo -e "${YELLOW}⏱️  Total setup time: ~4-5 minutes${NC}"
     echo ""
     
     # Check if we should skip confirmation in CI/automated environments
     if [[ "${CI:-false}" != "true" ]] && [[ "${SKIP_CONFIRMATION:-false}" != "true" ]]; then
-        read -p "Continue with setup? (y/N): " -n 1 -r
+        read -p "Ready to start? (y/N): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             log_info "Setup cancelled by user"
