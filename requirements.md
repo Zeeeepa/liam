@@ -129,6 +129,7 @@ FLAGS_SECRET=""
 - **Trigger.dev**: Uses local development mode
 - **Database**: Pre-configured PostgreSQL connection
 - **Application**: Pre-defined settings for localhost
+- **AI Model**: Gemini 2.0 Flash (latest experimental model)
 
 ---
 

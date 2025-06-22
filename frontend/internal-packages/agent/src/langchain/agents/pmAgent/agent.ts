@@ -16,9 +16,9 @@ export const requirementsAnalysisSchema = v.object({
 
 export class PMAgent extends BaseGeminiAgent {
   constructor() {
-    // Configure Gemini for PM tasks with higher creativity
+    // Configure Gemini 2.0 Flash for PM tasks with higher creativity
     super({
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.0-flash-exp',
       temperature: 0.2, // Slightly higher for creative requirement analysis
       maxOutputTokens: 8192,
     })

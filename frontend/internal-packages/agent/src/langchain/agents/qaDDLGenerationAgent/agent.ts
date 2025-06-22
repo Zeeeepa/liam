@@ -12,9 +12,9 @@ import { qaDDLGenerationPrompt } from './prompts'
  */
 export class QADDLGenerationAgent extends BaseGeminiAgent {
   constructor() {
-    // Configure Gemini for precise DDL generation
+    // Configure Gemini 2.0 Flash for precise DDL generation
     super({
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.0-flash-exp',
       temperature: 0.0, // Very low temperature for precise SQL generation
       maxOutputTokens: 4096, // DDL statements are typically shorter
     })
