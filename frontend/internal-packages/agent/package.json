@@ -12,7 +12,7 @@
     "@liam-hq/db": "workspace:*",
     "@liam-hq/db-structure": "workspace:*",
     "fast-json-patch": "3.1.1",
-    "langfuse-langchain": "3.37.3",
+    "langfuse-langchain": "3.37.4",
     "valibot": "1.1.0"
   },
   "devDependencies": {

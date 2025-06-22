@@ -8023,8 +8023,8 @@ packages:
     resolution: {integrity: sha512-yqXkQ1/8V9TxF8q6oULWPQ4cYZlUs1egN6JfGuhJSWb5x2Ymgt4Qh9of/Kz//CTM7IZgzZqvrlnx0VXhNKDITg==}
     engines: {node: '>=18'}
 
-  langfuse-langchain@3.37.3:
-    resolution: {integrity: sha512-IE4y6Im1AOEfaHdGcbQBsvfNMNnnBncMVj9Rk/jehRKn5A8Y/V8eOS7LTN95jD8fqpkjQ/OWrjRhqDk6dx0ZYw==}
+  langfuse-langchain@3.37.4:
+    resolution: {integrity: sha512-yh2+Rg+NqN6k+E29VW9lnLp9qpldBE3Ldhh/qsvInyk0hdhF64I/z0hWPFY4tYNvbzBXDHgApJ+66nSnXBf4Tg==}
     engines: {node: '>=18'}
     peerDependencies:
       langchain: '>=0.0.157 <0.4.0'
