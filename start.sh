@@ -533,6 +533,20 @@ start_application() {
         }
     fi
     
+    # Build critical workspace packages (db-structure for ERD functionality)
+    log_step "Building workspace packages..."
+    cd "$PROJECT_ROOT"
+    if [[ -d "frontend/packages/db-structure" ]]; then
+        log_info "Building @liam-hq/db-structure package..."
+        cd frontend/packages/db-structure
+        if pnpm gen && pnpm build 2>/dev/null; then
+            log_success "db-structure package built successfully"
+        else
+            log_warning "db-structure package build failed - ERD functionality may be limited"
+        fi
+        cd "$APP_DIR"
+    fi
+    
     # Build the project (optional, skip if it fails)
     log_step "Building the project..."
     if pnpm build 2>/dev/null; then
