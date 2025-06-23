@@ -62,7 +62,7 @@
     "build": "pnpm gen && next build",
     "dev": "concurrently \"pnpm:dev:*\"",
     "dev:css": "tcm -p '!(node_modules|.next|.trigger|.turbo)/**/*.module.css' --watch",
-    "dev:next": "next dev --port 3001",
+    "dev:next": "next dev --port 3000",
     "fmt": "concurrently \"pnpm:fmt:*\"",
     "fmt:biome": "biome check --write --unsafe .",
     "fmt:eslint": "eslint --fix .",
