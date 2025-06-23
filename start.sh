@@ -181,21 +181,35 @@ setup_environment() {
     
     # Create .env file if it doesn't exist
     if [[ ! -f "$PROJECT_ROOT/.env" ]]; then
-        log_step "Creating .env file from template..."
-        if [[ -f "$PROJECT_ROOT/.env.template" ]]; then
-            cp "$PROJECT_ROOT/.env.template" "$PROJECT_ROOT/.env"
-            log_success ".env file created from template"
-            log_warning "Please configure your environment variables in .env file"
+        log_step "Creating .env file from example..."
+        if [[ -f "$PROJECT_ROOT/.env.example" ]]; then
+            cp "$PROJECT_ROOT/.env.example" "$PROJECT_ROOT/.env"
+            log_success ".env file created from .env.example"
+            
+            # Add dynamically generated variables
+            log_step "Adding dynamic environment variables..."
+            cat >> "$PROJECT_ROOT/.env" << EOF
+
+# Dynamically generated variables
+NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+NEXT_PUBLIC_ENV_NAME="development"
+MIGRATION_ENABLED="true"
+EOF
+            log_success "Dynamic environment variables added"
         else
-            log_warning ".env.template not found, creating minimal .env file"
+            log_warning ".env.example not found, creating minimal .env file"
             cat > "$PROJECT_ROOT/.env" << EOF
 # LIAM Environment Configuration
-GOOGLE_API_KEY=""
-OPENAI_API_KEY=""
+GOOGLE_API_KEY="AIzaSyBXmhlHudrD4zXiv-5fjxi1gGG-_kdtaZ0"
+
+# Dynamically generated variables
 NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
-NEXT_PUBLIC_SUPABASE_ANON_KEY=""
-SUPABASE_SERVICE_ROLE_KEY=""
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+NEXT_PUBLIC_ENV_NAME="development"
+MIGRATION_ENABLED="true"
 EOF
+            log_success "Minimal .env file created with dynamic variables"
         fi
     fi
     
@@ -222,11 +236,22 @@ validate_environment() {
         validation_errors+=("Either GOOGLE_API_KEY or OPENAI_API_KEY must be set")
     fi
     
-    # Supabase configuration (only required in non-UI-only mode)
-    if [[ "${UI_ONLY_MODE:-false}" != "true" ]]; then
-        if [[ -z "${NEXT_PUBLIC_SUPABASE_URL:-}" ]]; then
-            validation_errors+=("NEXT_PUBLIC_SUPABASE_URL is required")
-        fi
+    # Auto-generate NEXT_PUBLIC_SUPABASE_URL if not set
+    if [[ -z "${NEXT_PUBLIC_SUPABASE_URL:-}" ]]; then
+        export NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
+        echo "NEXT_PUBLIC_SUPABASE_URL=\"http://localhost:54321\"" >> "$PROJECT_ROOT/.env"
+        log_info "Auto-generated NEXT_PUBLIC_SUPABASE_URL for local development"
+    fi
+    
+    # Auto-generate other required variables if not set
+    if [[ -z "${NEXT_PUBLIC_BASE_URL:-}" ]]; then
+        export NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+        echo "NEXT_PUBLIC_BASE_URL=\"http://localhost:3000\"" >> "$PROJECT_ROOT/.env"
+    fi
+    
+    if [[ -z "${NEXT_PUBLIC_ENV_NAME:-}" ]]; then
+        export NEXT_PUBLIC_ENV_NAME="development"
+        echo "NEXT_PUBLIC_ENV_NAME=\"development\"" >> "$PROJECT_ROOT/.env"
     fi
     
     if [[ ${#validation_errors[@]} -gt 0 ]]; then
@@ -244,8 +269,10 @@ validate_environment() {
     log_info "Configuration Summary:"
     log_info "  • Google API Key: ${GOOGLE_API_KEY:+✅ Set}${GOOGLE_API_KEY:-❌ Not set}"
     log_info "  • OpenAI API Key: ${OPENAI_API_KEY:+✅ Set}${OPENAI_API_KEY:-❌ Not set}"
-    log_info "  • Supabase URL: ${NEXT_PUBLIC_SUPABASE_URL:-Not set}"
-    log_info "  • Operation Mode: ${UI_ONLY_MODE:+UI-Only}${MINIMAL_MODE:+Minimal}${DEBUG:+Debug}${UI_ONLY_MODE}${MINIMAL_MODE}${DEBUG:-Full}"
+    log_info "  • Supabase URL: ${NEXT_PUBLIC_SUPABASE_URL}"
+    log_info "  • Base URL: ${NEXT_PUBLIC_BASE_URL}"
+    log_info "  • Environment: ${NEXT_PUBLIC_ENV_NAME}"
+    log_info "  • Operation Mode: ${UI_ONLY_MODE:+UI-Only }${MINIMAL_MODE:+Minimal }${DEBUG:+Debug }${UI_ONLY_MODE}${MINIMAL_MODE}${DEBUG:-Full}"
 }
 
 # Dependency installation
