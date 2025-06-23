@@ -330,42 +330,68 @@ setup_database() {
     
     log_header "Database Setup (Supabase)"
     
-    # Check if Supabase CLI is available
-    if ! command -v supabase >/dev/null 2>&1; then
-        log_step "Installing Supabase CLI..."
-        if command -v npm >/dev/null 2>&1; then
-            npm install -g supabase
-        else
-            log_error "Supabase CLI not found and npm not available for installation"
-            log_info "Please install Supabase CLI manually: https://supabase.com/docs/guides/cli"
+    # Set the correct Supabase directory (where the actual project is configured)
+    local DB_PACKAGE_DIR="$PROJECT_ROOT/frontend/internal-packages/db"
+    local ACTUAL_SUPABASE_DIR="$DB_PACKAGE_DIR/supabase"
+    
+    # Verify the db package exists
+    if [[ ! -d "$DB_PACKAGE_DIR" ]]; then
+        log_error "Database package not found: $DB_PACKAGE_DIR"
+        log_info "The Supabase configuration should be in frontend/internal-packages/db/"
+        return 1
+    fi
+    
+    # Check if Supabase CLI is available via the workspace
+    log_step "Verifying Supabase CLI availability..."
+    
+    if ! pnpm --filter @liam-hq/db exec supabase --version >/dev/null 2>&1; then
+        log_step "Installing Supabase CLI dependencies..."
+        cd "$DB_PACKAGE_DIR"
+        if ! pnpm install; then
+            log_error "Failed to install Supabase CLI dependencies"
+            log_info "Please run: cd $DB_PACKAGE_DIR && pnpm install"
+            cd "$PROJECT_ROOT"
+            return 1
+        fi
+        cd "$PROJECT_ROOT"
+        
+        # Verify installation worked
+        if ! pnpm --filter @liam-hq/db exec supabase --version >/dev/null 2>&1; then
+            log_error "Supabase CLI still not available after installation"
+            log_info "Please check the installation in: $DB_PACKAGE_DIR"
             return 1
         fi
     fi
     
-    # Initialize Supabase if needed
-    if [[ ! -d "$SUPABASE_DIR" ]]; then
+    local supabase_version
+    supabase_version=$(pnpm --filter @liam-hq/db exec supabase --version 2>/dev/null || echo "unknown")
+    log_success "Supabase CLI available (version: $supabase_version)"
+    
+    # Check if Supabase project is already initialized
+    if [[ ! -f "$ACTUAL_SUPABASE_DIR/config.toml" ]]; then
         log_step "Initializing Supabase project..."
-        mkdir -p "$SUPABASE_DIR"
-        cd "$SUPABASE_DIR"
-        supabase init
+        mkdir -p "$ACTUAL_SUPABASE_DIR"
+        cd "$ACTUAL_SUPABASE_DIR"
+        pnpm --filter @liam-hq/db exec supabase init
         cd "$PROJECT_ROOT"
+    else
+        log_info "Supabase project already initialized"
     fi
     
     # Start Supabase local development
     log_step "Starting Supabase local development environment..."
-    cd "$SUPABASE_DIR"
     
-    if supabase start; then
+    if pnpm --filter @liam-hq/db exec supabase start; then
         log_success "Supabase started successfully"
         
         # Extract and display connection details
         log_info "Supabase Connection Details:"
-        supabase status | grep -E "(API URL|DB URL|Studio URL|Inbucket URL)" || true
+        pnpm --filter @liam-hq/db exec supabase status | grep -E "(API URL|DB URL|Studio URL|Inbucket URL)" || true
         
         # Try to extract credentials automatically
-        if supabase status --output json >/dev/null 2>&1; then
+        if pnpm --filter @liam-hq/db exec supabase status --output json >/dev/null 2>&1; then
             local status_json
-            status_json=$(supabase status --output json)
+            status_json=$(pnpm --filter @liam-hq/db exec supabase status --output json)
             
             # Update .env with Supabase credentials if they're not set
             if [[ -z "${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}" ]]; then
@@ -393,9 +419,9 @@ setup_database() {
         log_step "Applying database migrations..."
         
         # Try to apply migrations with fallback strategy
-        if supabase db reset --linked=false 2>/dev/null; then
+        if pnpm --filter @liam-hq/db exec supabase db reset --linked=false 2>/dev/null; then
             log_success "Database migrations applied successfully"
-        elif supabase db reset 2>/dev/null; then
+        elif pnpm --filter @liam-hq/db exec supabase db reset 2>/dev/null; then
             log_success "Database reset completed (alternative method)"
         else
             log_warning "Database migrations failed, but database is functional"
@@ -404,7 +430,7 @@ setup_database() {
         
         # Generate TypeScript types (optional)
         log_step "Generating database types..."
-        if supabase gen types typescript --local > "$PROJECT_ROOT/database.types.ts" 2>/dev/null; then
+        if pnpm --filter @liam-hq/db exec supabase gen types typescript --local > "$ACTUAL_SUPABASE_DIR/database.types.ts" 2>/dev/null; then
             log_success "Database types generated successfully"
         else
             log_info "Database type generation skipped (not critical)"
@@ -413,11 +439,14 @@ setup_database() {
     else
         log_error "Failed to start Supabase"
         log_info "Continuing without database services..."
+        log_info "💡 Troubleshooting tips:"
+        log_info "  • Check if Docker is running (Supabase requires Docker)"
+        log_info "  • Try: pnpm --filter @liam-hq/db exec supabase start"
+        log_info "  • Check logs: pnpm --filter @liam-hq/db exec supabase status"
         return 1
     fi
     
-    cd "$PROJECT_ROOT"
-    log_success "Database setup completed"
+    log_success "Database setup completed successfully"
 }
 
 # Setup Trigger.dev for background jobs
@@ -683,7 +712,7 @@ health_check() {
         log_info "  • Run: ./start.sh --repair (fix common issues)"
         log_info "  • Run: ./start.sh --debug (verbose logging)"
         log_info "  • Run: ./start.sh --minimal (start with minimal services)"
-        log_info "  • Check logs above for specific error messages"
+        log_info "  ��� Check logs above for specific error messages"
     fi
     
     return $($health_ok && echo 0 || echo 1)
