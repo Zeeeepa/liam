@@ -689,10 +689,10 @@ start_application() {
     
     # Check for port conflicts first
     log_step "Checking for port conflicts..."
-    if lsof -i :3000 >/dev/null 2>&1; then
-        log_warning "Port 3000 is already in use"
+    if lsof -i :3001 >/dev/null 2>&1; then
+        log_warning "Port 3001 is already in use"
         log_info "Attempting to stop existing process..."
-        pkill -f "next.*3000" || true
+        pkill -f "next.*3001" || true
         sleep 2
     fi
     
@@ -742,8 +742,8 @@ start_application() {
     local attempt=1
     
     while [[ $attempt -le $max_attempts ]]; do
-        if curl -s http://localhost:3000 > /dev/null 2>&1; then
-            log_success "✅ Application is running at http://localhost:3000"
+        if curl -s http://localhost:3001 > /dev/null 2>&1; then
+            log_success "✅ Application is running at http://localhost:3001"
             return 0
         fi
         
@@ -762,7 +762,7 @@ start_application() {
     done
     
     log_warning "Application startup verification timed out after $((max_attempts * 2)) seconds"
-    log_info "The application may still be starting up - check http://localhost:3000 manually"
+    log_info "The application may still be starting up - check http://localhost:3001 manually"
     return 0  # Don't fail completely, as the app might still be starting
 }
 
@@ -773,7 +773,7 @@ show_status() {
     echo -e "${GREEN}🎉 Liam PMAgent System is now running!${NC}"
     echo ""
     echo "📊 Service URLs:"
-    echo "  • Frontend Application: http://localhost:3000"
+    echo "  • Frontend Application: http://localhost:3001"
     echo "  • Supabase Studio:     http://localhost:54323"
     echo "  • Supabase API:        http://localhost:54321"
     echo "  • Database:            postgresql://postgres:postgres@localhost:54322/postgres"
@@ -787,7 +787,7 @@ show_status() {
     echo "  • Requirements:        ./requirements.md"
     echo ""
     echo "🚀 Quick Test:"
-    echo "  1. Open http://localhost:3000"
+    echo "  1. Open http://localhost:3001"
     echo "  2. Create a new design session"
     echo "  3. Send a message: 'Create a user management system'"
     echo "  4. Watch the PMAgent workflow execute with Gemini 2.5 Pro!"
@@ -811,8 +811,8 @@ health_check() {
     # Check frontend
     ((total_checks++))
     log_info "Checking frontend application..."
-    if curl -s http://localhost:3000 > /dev/null 2>&1; then
-        log_success "✅ Frontend is healthy (http://localhost:3000)"
+    if curl -s http://localhost:3001 > /dev/null 2>&1; then
+        log_success "✅ Frontend is healthy (http://localhost:3001)"
         ((checks_passed++))
     else
         log_error "❌ Frontend is not responding"
