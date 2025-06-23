@@ -560,13 +560,25 @@ start_application() {
             
             # Try to stop various services that might be using the port
             pkill -f "next.*$port" 2>/dev/null || true
-            pkill -f "nginx" 2>/dev/null || true
-            systemctl stop nginx 2>/dev/null || true
-            service nginx stop 2>/dev/null || true
+            
+            # Try to stop nginx if it's using the port
+            if lsof -i :$port | grep -q nginx; then
+                log_info "Nginx is using port $port, attempting to stop it..."
+                pkill -f "nginx" 2>/dev/null || true
+                systemctl stop nginx 2>/dev/null || true
+                service nginx stop 2>/dev/null || true
+                sleep 1
+                
+                # Force kill nginx processes if still running
+                if lsof -i :$port | grep -q nginx; then
+                    log_warning "Force killing nginx processes on port $port..."
+                    lsof -ti :$port | grep nginx | xargs kill -9 2>/dev/null || true
+                fi
+            fi
             
             # Force kill any remaining processes on the port
             if lsof -i :$port >/dev/null 2>&1; then
-                log_info "Force killing processes on port $port..."
+                log_info "Force killing remaining processes on port $port..."
                 lsof -ti :$port | xargs kill -9 2>/dev/null || true
             fi
         fi
@@ -646,14 +658,29 @@ start_application() {
         log_warning "Port 3000 still occupied, using port 3001 instead"
         app_port=3001
         export PORT=3001
+        export NEXT_PUBLIC_BASE_URL="http://localhost:3001"
+        
+        # Update .env file with new port
+        if [[ -f "$PROJECT_ROOT/.env" ]]; then
+            sed -i 's|NEXT_PUBLIC_BASE_URL="http://localhost:3000"|NEXT_PUBLIC_BASE_URL="http://localhost:3001"|g' "$PROJECT_ROOT/.env" 2>/dev/null || true
+        fi
+        
         # Override the hardcoded port in package.json
+        log_info "Starting CSS watcher..."
         pnpm dev:css &
+        local css_pid=$!
+        log_info "Starting Next.js on port 3001..."
         pnpm exec next dev --port 3001 &
+        local app_pid=$!
+        SERVICE_PIDS+=("$css_pid" "$app_pid")
     else
+        log_info "Starting application on port 3000..."
+        export PORT=3000
+        export NEXT_PUBLIC_BASE_URL="http://localhost:3000"
         pnpm dev &
+        local app_pid=$!
+        SERVICE_PIDS+=("$app_pid")
     fi
-    local app_pid=$!
-    SERVICE_PIDS+=("$app_pid")
     
     cd "$PROJECT_ROOT"
     
