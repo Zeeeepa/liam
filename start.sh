@@ -632,6 +632,15 @@ start_application() {
     
     # Start the frontend application
     log_step "Starting frontend application..."
+    
+    # Use port 3001 if 3000 is still occupied
+    local app_port=3000
+    if lsof -i :3000 >/dev/null 2>&1; then
+        log_warning "Port 3000 still occupied, using port 3001 instead"
+        app_port=3001
+        export PORT=3001
+    fi
+    
     pnpm dev &
     local app_pid=$!
     SERVICE_PIDS+=("$app_pid")
@@ -644,8 +653,8 @@ start_application() {
     local attempt=1
     
     while [[ $attempt -le $max_attempts ]]; do
-        if curl -s http://localhost:3000 > /dev/null 2>&1; then
-            log_success "✅ Application is running at http://localhost:3000"
+        if curl -s http://localhost:$app_port > /dev/null 2>&1; then
+            log_success "✅ Application is running at http://localhost:$app_port"
             return 0
         fi
         
@@ -664,7 +673,7 @@ start_application() {
     done
     
     log_warning "Application startup verification timed out after $((max_attempts * 2)) seconds"
-    log_info "The application may still be starting up - check http://localhost:3000 manually"
+    log_info "The application may still be starting up - check http://localhost:$app_port manually"
     return 0  # Don't fail completely, as the app might still be starting
 }
 
@@ -679,8 +688,12 @@ health_check() {
     # Check frontend
     ((total_checks++))
     log_info "Checking frontend application..."
-    if curl -s http://localhost:3000 > /dev/null 2>&1; then
-        log_success "✅ Frontend is healthy (http://localhost:3000)"
+    local frontend_port=3000
+    if [[ -n "${PORT:-}" ]]; then
+        frontend_port="$PORT"
+    fi
+    if curl -s http://localhost:$frontend_port > /dev/null 2>&1; then
+        log_success "✅ Frontend is healthy (http://localhost:$frontend_port)"
         ((checks_passed++))
     else
         log_error "❌ Frontend is not responding"
@@ -771,8 +784,12 @@ show_status() {
     echo -e "${GREEN}🎉 LIAM is now running! Here are your access URLs:${NC}\n"
     
     # Frontend Application
+    local frontend_port=3000
+    if [[ -n "${PORT:-}" ]]; then
+        frontend_port="$PORT"
+    fi
     echo -e "${WHITE}📱 Frontend Application:${NC}"
-    echo -e "   ${CYAN}http://localhost:3000${NC}"
+    echo -e "   ${CYAN}http://localhost:$frontend_port${NC}"
     echo -e "   Main LIAM web interface\n"
     
     # Database Services (if not UI-only mode)
