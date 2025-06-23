@@ -556,13 +556,32 @@ start_application() {
     for port in "${ports_to_check[@]}"; do
         if lsof -i :$port >/dev/null 2>&1; then
             log_warning "Port $port is already in use"
-            log_info "Attempting to stop existing process on port $port..."
-            pkill -f "next.*$port" || true
-            # Also try to kill any process using the port
-            lsof -ti :$port | xargs kill -9 2>/dev/null || true
+            log_info "Attempting to stop existing processes on port $port..."
+            
+            # Try to stop various services that might be using the port
+            pkill -f "next.*$port" 2>/dev/null || true
+            pkill -f "nginx" 2>/dev/null || true
+            systemctl stop nginx 2>/dev/null || true
+            service nginx stop 2>/dev/null || true
+            
+            # Force kill any remaining processes on the port
+            if lsof -i :$port >/dev/null 2>&1; then
+                log_info "Force killing processes on port $port..."
+                lsof -ti :$port | xargs kill -9 2>/dev/null || true
+            fi
         fi
     done
-    sleep 2
+    sleep 3
+    
+    # Final check for port availability
+    for port in "${ports_to_check[@]}"; do
+        if lsof -i :$port >/dev/null 2>&1; then
+            log_error "Unable to free port $port. Please manually stop the conflicting service."
+            log_info "You can check what's using the port with: lsof -i :$port"
+            return 1
+        fi
+    done
+    log_success "All required ports are available"
     
     # Navigate to app directory
     if [[ ! -d "$APP_DIR" ]]; then
