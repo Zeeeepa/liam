@@ -1,7 +1,7 @@
-import { ChatOpenAI } from '@langchain/openai'
 import * as v from 'valibot'
-import { createLangfuseHandler } from '../../utils/telemetry'
-import type { BasePromptVariables, ChatAgent } from '../../utils/types'
+import { BaseGeminiAgent, type GeminiAgentConfig } from '../base/geminiAgent'
+import { mapOpenAIModelToGemini } from '../../utils/geminiConfig'
+import type { BasePromptVariables } from '../../utils/types'
 import { PMAgentMode, pmAnalysisPrompt, pmReviewPrompt } from './prompts'
 
 interface PMAgentVariables extends BasePromptVariables {
@@ -15,14 +15,14 @@ export const requirementsAnalysisSchema = v.object({
   nonFunctionalRequirements: v.record(v.string(), v.array(v.string())),
 })
 
-export class PMAgent implements ChatAgent {
-  private model: ChatOpenAI
-
-  constructor() {
-    this.model = new ChatOpenAI({
-      model: 'o3',
-      callbacks: [createLangfuseHandler()],
-    })
+export class PMAgent extends BaseGeminiAgent {
+  constructor(config?: GeminiAgentConfig) {
+    // Use Gemini equivalent of o3 for project management tasks
+    const geminiConfig = {
+      model: mapOpenAIModelToGemini('o3'),
+      ...config,
+    }
+    super(geminiConfig)
   }
 
   async generate(variables: BasePromptVariables): Promise<string> {
