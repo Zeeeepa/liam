@@ -496,12 +496,17 @@ start_application() {
     
     # Check for port conflicts first
     log_step "Checking for port conflicts..."
-    if lsof -i :3000 >/dev/null 2>&1; then
-        log_warning "Port 3000 is already in use"
-        log_info "Attempting to stop existing process..."
-        pkill -f "next.*3000" || true
-        sleep 2
-    fi
+    local ports_to_check=(3000 3001)
+    for port in "${ports_to_check[@]}"; do
+        if lsof -i :$port >/dev/null 2>&1; then
+            log_warning "Port $port is already in use"
+            log_info "Attempting to stop existing process on port $port..."
+            pkill -f "next.*$port" || true
+            # Also try to kill any process using the port
+            lsof -ti :$port | xargs kill -9 2>/dev/null || true
+        fi
+    done
+    sleep 2
     
     # Navigate to app directory
     if [[ ! -d "$APP_DIR" ]]; then
