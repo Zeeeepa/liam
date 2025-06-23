@@ -573,15 +573,22 @@ start_application() {
     done
     sleep 3
     
-    # Final check for port availability
+    # Check if at least one port is available (3000 or 3001)
+    local available_port=""
     for port in "${ports_to_check[@]}"; do
-        if lsof -i :$port >/dev/null 2>&1; then
-            log_error "Unable to free port $port. Please manually stop the conflicting service."
-            log_info "You can check what's using the port with: lsof -i :$port"
-            return 1
+        if ! lsof -i :$port >/dev/null 2>&1; then
+            available_port=$port
+            break
         fi
     done
-    log_success "All required ports are available"
+    
+    if [[ -z "$available_port" ]]; then
+        log_error "Both ports 3000 and 3001 are occupied. Please manually stop conflicting services."
+        log_info "You can check what's using the ports with: lsof -i :3000 && lsof -i :3001"
+        return 1
+    else
+        log_success "Port $available_port is available for the application"
+    fi
     
     # Navigate to app directory
     if [[ ! -d "$APP_DIR" ]]; then
