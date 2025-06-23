@@ -646,9 +646,12 @@ start_application() {
         log_warning "Port 3000 still occupied, using port 3001 instead"
         app_port=3001
         export PORT=3001
+        # Override the hardcoded port in package.json
+        pnpm dev:css &
+        pnpm exec next dev --port 3001 &
+    else
+        pnpm dev &
     fi
-    
-    pnpm dev &
     local app_pid=$!
     SERVICE_PIDS+=("$app_pid")
     
