@@ -1,0 +1,74 @@
+# Docker Health Check Configuration for Liam
+#
+# This file provides examples of Docker health check configurations
+# for the Liam application. Health checks ensure containers are running
+# properly and enable orchestrators to restart unhealthy containers.
+
+# ==============================================================================
+# Example 1: Basic Dockerfile with Health Check
+# ==============================================================================
+
+# Add this to your Dockerfile:
+# 
+# FROM node:20-alpine
+# 
+# WORKDIR /app
+# 
+# # Install dependencies
+# COPY package.json pnpm-lock.yaml ./
+# RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# 
+# # Copy application
+# COPY . .
+# 
+# # Build
+# RUN pnpm build --filter @liam-hq/app
+# 
+# # Expose port
+# EXPOSE 3001
+# 
+# # Health check - checks liveness endpoint every 30s
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+#   CMD node -e "require('http').get('http://localhost:3001/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"
+# 
+# # Start application
+# CMD ["pnpm", "start", "--filter", "@liam-hq/app"]
+
+# ==============================================================================
+# Example 2: Kubernetes Probes
+# ==============================================================================
+
+# Add to your Kubernetes deployment manifest:
+#
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: liam-app
+# spec:
+#   replicas: 3
+#   template:
+#     spec:
+#       containers:
+#       - name: liam
+#         image: liam:latest
+#         ports:
+#         - containerPort: 3001
+#         # Liveness probe - restart if unhealthy
+#         livenessProbe:
+#           httpGet:
+#             path: /api/health
+#             port: 3001
+#           initialDelaySeconds: 30
+#           periodSeconds: 10
+#           timeoutSeconds: 3
+#           failureThreshold: 3
+#         # Readiness probe - remove from load balancer if not ready
+#         readinessProbe:
+#           httpGet:
+#             path: /api/ready
+#             port: 3001
+#           initialDelaySeconds: 10
+#           periodSeconds: 5
+#           timeoutSeconds: 3
+#           failureThreshold: 3
+

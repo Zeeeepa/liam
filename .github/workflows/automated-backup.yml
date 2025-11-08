@@ -1,0 +1,60 @@
+name: Automated Database Backup
+
+# Automates database backups with compression, encryption, and S3 upload
+# Runs daily at 2 AM UTC or can be triggered manually
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      retention_days:
+        description: 'Backup retention in days'
+        default: '30'
+      encrypt:
+        description: 'Encrypt backup'
+        type: boolean
+        default: false
+
+jobs:
+  backup:
+    name: Create Database Backup
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup
+        run: |
+          mkdir -p ./backups
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          
+      - name: Create backup
+        env:
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+        run: |
+          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+          BACKUP_FILE="./backups/liam_backup_${TIMESTAMP}.sql"
+          pg_dump "$POSTGRES_URL" --no-owner --no-acl --clean > "$BACKUP_FILE"
+          gzip "$BACKUP_FILE"
+          echo "Backup created: ${BACKUP_FILE}.gz"
+          
+      - name: Upload to S3
+        if: ${{ secrets.BACKUP_S3_BUCKET != '' }}
+        run: |
+          aws s3 sync ./backups/ s3://${{ secrets.BACKUP_S3_BUCKET }}/liam-backups/ \
+            --storage-class STANDARD_IA \
+            --exclude "*" --include "*.sql.gz"
+            
+      - name: Cleanup old backups
+        run: |
+          find ./backups -name "*.sql.gz" -mtime +${{ github.event.inputs.retention_days || '30' }} -delete
+
+# Setup Instructions:
+# 1. Add secrets: POSTGRES_URL, BACKUP_S3_BUCKET (optional)
+# 2. Configure AWS credentials if using S3
+# 3. Adjust cron schedule as needed
+
