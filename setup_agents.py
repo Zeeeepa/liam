@@ -40,35 +40,318 @@ class LiamSetup:
         
     def configure_environment(self):
         """Interactive environment configuration"""
-        print("⚙️  Configuring environment...")
+        print("⚙️  Interactive Environment Configuration")
+        print("=" * 60)
         
         if self.env_file.exists():
-            response = input(f".env.local already exists. Overwrite? (y/N): ")
+            response = input(f"\n.env.local already exists. Overwrite? (y/N): ")
             if response.lower() != 'y':
                 print("Skipping configuration.")
                 return
         
-        # Copy template
-        env_example = self.project_root / ".env.example"
-        if env_example.exists():
-            shutil.copy(env_example, self.env_file)
-            print(f"✅ Created .env.local from template")
-        else:
-            # Create basic template
-            with open(self.env_file, 'w') as f:
-                f.write("# Liam Environment Configuration\n\n")
-                f.write("NEXT_PUBLIC_BASE_URL=http://localhost:3001\n")
-                f.write("PORT=3001\n")
-                f.write("\n# TODO: Add your API keys and database URL\n")
-                f.write("OPENAI_API_KEY=\n")
-                f.write("POSTGRES_URL=\n")
-            print(f"✅ Created basic .env.local")
+        config = {}
+        
+        # Helper function to get input
+        def get_input(prompt, default="", required=True, validate_fn=None):
+            """Get user input with optional validation"""
+            required_text = "[REQUIRED]" if required else "[OPTIONAL]"
+            default_text = f" (default: {default})" if default else ""
+            
+            while True:
+                value = input(f"\n{required_text} {prompt}{default_text}: ").strip()
+                
+                if not value and default:
+                    value = default
+                
+                if not value and required:
+                    print("❌ This field is required. Please provide a value.")
+                    continue
+                
+                if not value and not required:
+                    return ""
+                
+                if validate_fn:
+                    is_valid, message = validate_fn(value)
+                    if not is_valid:
+                        print(f"❌ {message}")
+                        continue
+                
+                return value
+        
+        # Validation functions
+        def validate_url(url):
+            if url.startswith(('http://', 'https://')):
+                return True, ""
+            return False, "URL must start with http:// or https://"
+        
+        def validate_postgres_url(url):
+            if url.startswith('postgresql://') or url.startswith('postgres://'):
+                return True, ""
+            return False, "PostgreSQL URL must start with postgresql:// or postgres://"
+        
+        def validate_port(port):
+            try:
+                p = int(port)
+                if 1 <= p <= 65535:
+                    return True, ""
+                return False, "Port must be between 1 and 65535"
+            except ValueError:
+                return False, "Port must be a number"
+        
+        print("\n" + "="*60)
+        print("📝 REQUIRED CONFIGURATION")
+        print("="*60)
+        
+        # Required: Database Configuration
+        print("\n🗄️  DATABASE CONFIGURATION")
+        print("-" * 60)
+        print("Example: postgresql://USERNAME:PASSWORD@HOSTNAME:5432/DATABASE")
+        config['POSTGRES_URL'] = get_input(
+            "PostgreSQL Database URL",
+            required=True,
+            validate_fn=validate_postgres_url
+        )
+        
+        config['NEXT_PUBLIC_SUPABASE_URL'] = get_input(
+            "Supabase Project URL",
+            default="https://your-project.supabase.co",
+            required=True,
+            validate_fn=validate_url
+        )
+        
+        config['NEXT_PUBLIC_SUPABASE_ANON_KEY'] = get_input(
+            "Supabase Anonymous Key",
+            required=True
+        )
+        
+        config['SUPABASE_SERVICE_ROLE_KEY'] = get_input(
+            "Supabase Service Role Key",
+            required=True
+        )
+        
+        # Required: Application Configuration
+        print("\n🌐 APPLICATION CONFIGURATION")
+        print("-" * 60)
+        config['NEXT_PUBLIC_BASE_URL'] = get_input(
+            "Application Base URL",
+            default="http://localhost:3001",
+            required=True,
+            validate_fn=validate_url
+        )
+        
+        config['PORT'] = get_input(
+            "Application Port",
+            default="3001",
+            required=True,
+            validate_fn=validate_port
+        )
+        
+        # Required: AI Provider (at least one)
+        print("\n🤖 AI PROVIDER CONFIGURATION")
+        print("-" * 60)
+        print("At least ONE AI provider is required (OpenAI recommended)")
+        
+        config['OPENAI_API_KEY'] = get_input(
+            "OpenAI API Key (Get from: https://platform.openai.com/api-keys)",
+            required=True
+        )
+        
+        print("\n" + "="*60)
+        print("🔧 OPTIONAL CONFIGURATION")
+        print("="*60)
+        print("Press Enter to skip any optional field")
+        
+        # Optional: Additional AI Providers
+        print("\n🤖 ADDITIONAL AI PROVIDERS")
+        print("-" * 60)
+        
+        config['ANTHROPIC_API_KEY'] = get_input(
+            "Anthropic (Claude) API Key",
+            required=False
+        )
+        
+        config['ZAI_API_KEY'] = get_input(
+            "Z.AI API Key",
+            required=False
+        )
+        
+        config['AZURE_OPENAI_API_KEY'] = get_input(
+            "Azure OpenAI API Key",
+            required=False
+        )
+        
+        if config.get('AZURE_OPENAI_API_KEY'):
+            config['AZURE_OPENAI_ENDPOINT'] = get_input(
+                "Azure OpenAI Endpoint",
+                required=False,
+                validate_fn=validate_url
+            )
+            
+            config['AZURE_OPENAI_DEPLOYMENT_NAME'] = get_input(
+                "Azure OpenAI Deployment Name",
+                required=False
+            )
+        
+        # Optional: Model Configuration
+        print("\n⚙️  MODEL CONFIGURATION")
+        print("-" * 60)
+        
+        config['DEFAULT_MODEL'] = get_input(
+            "Default LLM Model",
+            default="gpt-4",
+            required=False
+        )
+        
+        config['DEFAULT_TEMPERATURE'] = get_input(
+            "Default Temperature (0.0-2.0)",
+            default="0.7",
+            required=False
+        )
+        
+        # Optional: Feature Flags
+        print("\n🚩 FEATURE FLAGS")
+        print("-" * 60)
+        
+        enable_ai_reliability = input("\nEnable AI Provider Reliability (fallback, retry, circuit breaker)? (Y/n): ").strip().lower()
+        config['ENABLE_AI_RELIABILITY'] = 'true' if enable_ai_reliability != 'n' else 'false'
+        
+        if config['ENABLE_AI_RELIABILITY'] == 'true':
+            config['AI_CIRCUIT_BREAKER_THRESHOLD'] = get_input(
+                "Circuit Breaker Failure Threshold",
+                default="5",
+                required=False
+            )
+            
+            config['AI_RETRY_MAX_ATTEMPTS'] = get_input(
+                "Maximum Retry Attempts",
+                default="3",
+                required=False
+            )
+        
+        # Optional: Logging and Monitoring
+        print("\n📊 LOGGING & MONITORING")
+        print("-" * 60)
+        
+        config['LOG_LEVEL'] = get_input(
+            "Log Level (debug/info/warn/error)",
+            default="info",
+            required=False
+        )
+        
+        config['ENABLE_METRICS'] = input("\nEnable Prometheus Metrics? (y/N): ").strip().lower()
+        config['ENABLE_METRICS'] = 'true' if config['ENABLE_METRICS'] == 'y' else 'false'
+        
+        # Optional: Security
+        print("\n🔒 SECURITY CONFIGURATION")
+        print("-" * 60)
+        
+        config['JWT_SECRET'] = get_input(
+            "JWT Secret (leave empty to auto-generate)",
+            required=False
+        )
+        
+        if not config['JWT_SECRET']:
+            import secrets
+            config['JWT_SECRET'] = secrets.token_urlsafe(32)
+            print(f"✅ Generated JWT Secret: {config['JWT_SECRET'][:20]}...")
+        
+        config['SESSION_SECRET'] = get_input(
+            "Session Secret (leave empty to auto-generate)",
+            required=False
+        )
+        
+        if not config['SESSION_SECRET']:
+            import secrets
+            config['SESSION_SECRET'] = secrets.token_urlsafe(32)
+            print(f"✅ Generated Session Secret: {config['SESSION_SECRET'][:20]}...")
+        
+        # Write configuration file
+        print("\n" + "="*60)
+        print("💾 Writing Configuration File...")
+        print("="*60)
+        
+        with open(self.env_file, 'w') as f:
+            f.write("# Liam Environment Configuration\n")
+            f.write("# Generated: " + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + "\n")
+            f.write("# DO NOT COMMIT THIS FILE TO VERSION CONTROL\n\n")
+            
+            # Write required configuration
+            f.write("# =============================================================================\n")
+            f.write("# DATABASE CONFIGURATION (REQUIRED)\n")
+            f.write("# =============================================================================\n")
+            f.write(f"POSTGRES_URL={config['POSTGRES_URL']}\n")
+            f.write(f"NEXT_PUBLIC_SUPABASE_URL={config['NEXT_PUBLIC_SUPABASE_URL']}\n")
+            f.write(f"NEXT_PUBLIC_SUPABASE_ANON_KEY={config['NEXT_PUBLIC_SUPABASE_ANON_KEY']}\n")
+            f.write(f"SUPABASE_SERVICE_ROLE_KEY={config['SUPABASE_SERVICE_ROLE_KEY']}\n\n")
+            
+            f.write("# =============================================================================\n")
+            f.write("# APPLICATION CONFIGURATION (REQUIRED)\n")
+            f.write("# =============================================================================\n")
+            f.write(f"NEXT_PUBLIC_BASE_URL={config['NEXT_PUBLIC_BASE_URL']}\n")
+            f.write(f"PORT={config['PORT']}\n\n")
+            
+            f.write("# =============================================================================\n")
+            f.write("# AI PROVIDER API KEYS\n")
+            f.write("# =============================================================================\n")
+            f.write(f"OPENAI_API_KEY={config['OPENAI_API_KEY']}\n")
+            if config.get('ANTHROPIC_API_KEY'):
+                f.write(f"ANTHROPIC_API_KEY={config['ANTHROPIC_API_KEY']}\n")
+            if config.get('ZAI_API_KEY'):
+                f.write(f"ZAI_API_KEY={config['ZAI_API_KEY']}\n")
+            if config.get('AZURE_OPENAI_API_KEY'):
+                f.write(f"AZURE_OPENAI_API_KEY={config['AZURE_OPENAI_API_KEY']}\n")
+                f.write(f"AZURE_OPENAI_ENDPOINT={config.get('AZURE_OPENAI_ENDPOINT', '')}\n")
+                f.write(f"AZURE_OPENAI_DEPLOYMENT_NAME={config.get('AZURE_OPENAI_DEPLOYMENT_NAME', '')}\n")
+            f.write("\n")
+            
+            f.write("# =============================================================================\n")
+            f.write("# MODEL CONFIGURATION (OPTIONAL)\n")
+            f.write("# =============================================================================\n")
+            if config.get('DEFAULT_MODEL'):
+                f.write(f"DEFAULT_MODEL={config['DEFAULT_MODEL']}\n")
+            if config.get('DEFAULT_TEMPERATURE'):
+                f.write(f"DEFAULT_TEMPERATURE={config['DEFAULT_TEMPERATURE']}\n")
+            f.write("\n")
+            
+            f.write("# =============================================================================\n")
+            f.write("# AI RELIABILITY (OPTIONAL)\n")
+            f.write("# =============================================================================\n")
+            f.write(f"ENABLE_AI_RELIABILITY={config.get('ENABLE_AI_RELIABILITY', 'true')}\n")
+            if config.get('AI_CIRCUIT_BREAKER_THRESHOLD'):
+                f.write(f"AI_CIRCUIT_BREAKER_THRESHOLD={config['AI_CIRCUIT_BREAKER_THRESHOLD']}\n")
+            if config.get('AI_RETRY_MAX_ATTEMPTS'):
+                f.write(f"AI_RETRY_MAX_ATTEMPTS={config['AI_RETRY_MAX_ATTEMPTS']}\n")
+            f.write("\n")
+            
+            f.write("# =============================================================================\n")
+            f.write("# LOGGING & MONITORING (OPTIONAL)\n")
+            f.write("# =============================================================================\n")
+            if config.get('LOG_LEVEL'):
+                f.write(f"LOG_LEVEL={config['LOG_LEVEL']}\n")
+            f.write(f"ENABLE_METRICS={config.get('ENABLE_METRICS', 'false')}\n\n")
+            
+            f.write("# =============================================================================\n")
+            f.write("# SECURITY (OPTIONAL)\n")
+            f.write("# =============================================================================\n")
+            if config.get('JWT_SECRET'):
+                f.write(f"JWT_SECRET={config['JWT_SECRET']}\n")
+            if config.get('SESSION_SECRET'):
+                f.write(f"SESSION_SECRET={config['SESSION_SECRET']}\n")
+            f.write("\n")
         
         # Secure file permissions
         os.chmod(self.env_file, 0o600)
-        print(f"✅ Secured file permissions (600)")
         
-        print("\n⚠️  Please edit .env.local and add your API keys and database URL")
+        print(f"\n✅ Configuration saved to: {self.env_file}")
+        print(f"✅ File permissions secured (600)")
+        print("\n" + "="*60)
+        print("🎉 Configuration Complete!")
+        print("="*60)
+        print(f"\nNext steps:")
+        print(f"  1. Review configuration: cat {self.env_file}")
+        print(f"  2. Validate configuration: python3 setup_agents.py validate-env")
+        print(f"  3. Start application: python3 start.py")
+        print("="*60)
         
     def validate_environment(self):
         """Validate environment configuration"""
