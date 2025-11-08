@@ -1,0 +1,237 @@
+version: '3.8'
+
+# Docker Compose configuration for Liam
+# Includes: Application, PostgreSQL, and optional monitoring
+
+services:
+  # ===========================================================================
+  # Main Application
+  # ===========================================================================
+  app:
+    build: .
+    container_name: liam-app
+    ports:
+      - "${APP_PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - POSTGRES_URL=postgresql://postgres:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-liam}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      - LIAM_GITHUB_OAUTH_KEYRING=${LIAM_GITHUB_OAUTH_KEYRING:-}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY:-}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - liam-network
+
+  # ===========================================================================
+  # PostgreSQL Database
+  # ===========================================================================
+  db:
+    image: postgres:15-alpine
+    container_name: liam-db
+    environment:
+      - POSTGRES_DB=${DB_NAME:-liam}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - liam-network
+
+  # ===========================================================================
+  # Nginx Reverse Proxy (Optional)
+  # ===========================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: liam-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./ACTIONS/examples/nginx-loadbalancer.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/ssl:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - liam-network
+    profiles:
+      - with-nginx
+
+  # ===========================================================================
+  # Redis Cache (Optional)
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: liam-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - liam-network
+    profiles:
+      - with-redis
+
+  # ===========================================================================
+  # pgAdmin (Optional - Database Management UI)
+  # ===========================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: liam-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@liam.local}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - liam-network
+    profiles:
+      - with-pgadmin
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  liam-network:
+    driver: bridge
+
+# =============================================================================
+# Usage Instructions
+# =============================================================================
+#
+# Prerequisites:
+#   - Docker 20.10+
+#   - Docker Compose 2.0+
+#   - Create .env file with required variables
+#
+# Basic Usage:
+#   docker-compose up -d                    # Start app + database
+#   docker-compose down                     # Stop all services
+#   docker-compose logs -f app              # View app logs
+#   docker-compose ps                       # List running services
+#
+# With Optional Services:
+#   docker-compose --profile with-nginx up -d        # Include nginx
+#   docker-compose --profile with-redis up -d        # Include redis
+#   docker-compose --profile with-pgadmin up -d      # Include pgadmin
+#
+# Development Mode:
+#   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Production Mode:
+#   docker-compose --profile with-nginx --profile with-redis up -d
+#
+# Database Backup:
+#   docker-compose exec db pg_dump -U postgres liam > backup.sql
+#
+# Database Restore:
+#   docker-compose exec -T db psql -U postgres liam < backup.sql
+#
+# Scale Application:
+#   docker-compose up -d --scale app=3
+#
+# Health Check:
+#   curl http://localhost:3001/api/health
+#   curl http://localhost:3001/api/ready
+#
+# =============================================================================
+# Environment Variables (.env file)
+# =============================================================================
+#
+# Required:
+#   APP_PORT=3001
+#   DB_NAME=liam
+#   DB_USER=postgres
+#   DB_PASSWORD=your_secure_password
+#   POSTGRES_URL=postgresql://postgres:your_secure_password@db:5432/liam
+#   OPENAI_API_KEY=sk-...
+#   NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+#   SUPABASE_SERVICE_ROLE_KEY=eyJ...
+#
+# Optional:
+#   OPENAI_BASE_URL=https://api.openai.com/v1
+#   ANTHROPIC_API_KEY=sk-ant-...
+#   GITHUB_CLIENT_ID=Iv1...
+#   GITHUB_CLIENT_SECRET=...
+#   LIAM_GITHUB_OAUTH_KEYRING=k2025-01:...
+#   LANGSMITH_API_KEY=...
+#   SENTRY_DSN=https://...
+#   REDIS_PORT=6379
+#   PGADMIN_EMAIL=admin@liam.local
+#   PGADMIN_PASSWORD=admin
+#   PGADMIN_PORT=5050
+#
+# =============================================================================
+# Troubleshooting
+# =============================================================================
+#
+# Container won't start:
+#   docker-compose logs app
+#   docker-compose logs db
+#
+# Database connection issues:
+#   docker-compose exec db psql -U postgres -c "SELECT 1;"
+#
+# Reset everything:
+#   docker-compose down -v
+#   docker-compose up -d
+#
+# Permission issues:
+#   sudo chown -R $USER:$USER .
+#
+# Port already in use:
+#   Change APP_PORT in .env file
+#   Or stop the conflicting service
+
